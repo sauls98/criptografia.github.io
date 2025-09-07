@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <!-- SOLUCIÓN: Esta metaetiqueta fuerza al navegador a usar UTF-8 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CriptoSuite Profesional Web</title>
@@ -78,7 +77,7 @@
             padding: 10px 20px; border-radius: 8px; font-weight: 500; cursor: pointer;
         }
         
-        /* --- Aplicación Principal --- */
+        /* --- Estilos Generales --- */
         #main-app { display: flex; width: 100%; height: 100%; opacity: 0; visibility: hidden; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
         #main-app.visible { opacity: 1; visibility: visible; }
         .sidebar { background-color: var(--surface-color); padding: 20px; width: 250px; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; box-shadow: 2px 0 5px rgba(0,0,0,0.05); flex-shrink: 0; }
@@ -101,7 +100,7 @@
         .form-group textarea { resize: vertical; min-height: 80px; }
         .form-group input[readonly] { background-color: var(--bg-color); cursor: text; }
         .radio-group { display: flex; gap: 15px; }
-        .action-button { background-color: var(--primary-color); color: var(--primary-text-color); font-weight: 500; border: none; padding: 12px 20px; border-radius: 8px; font-size: 16px; cursor: pointer; transition: background-color 0.2s, transform 0.2s, opacity 0.2s; display: inline-flex; align-items: center; gap: 8px; }
+        .action-button { background-color: var(--primary-color); color: var(--primary-text-color); font-weight: 500; border: none; padding: 12px 20px; border-radius: 8px; font-size: 16px; cursor: pointer; transition: background-color 0.2s, transform 0.2s, opacity 0.2s; display: inline-flex; align-items: center; gap: 8px; text-decoration: none; }
         .action-button:hover { transform: translateY(-1px); }
         .action-button:disabled { background-color: #9ca3af; cursor: not-allowed; transform: none; }
         .result-display { background-color: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; padding: 20px; text-align: center; margin-bottom: 20px; }
@@ -117,6 +116,23 @@
         .validation-message { color: var(--error-color); font-size: 12px; margin-top: 4px; display: none; }
         input.invalid { border-color: var(--error-color); }
         input.invalid:focus { box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2); }
+        
+        /* --- Estilos del Panel de Recursos --- */
+        #recursos.tool-container.active { display: block; }
+        .resource-card {
+            background-color: var(--surface-color);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .resource-info h3 { margin: 0 0 5px 0; font-size: 18px; font-weight: 600; }
+        .resource-info p { margin: 0; color: var(--text-color-secondary); }
+        .resource-icon { width: 20px; height: 20px; }
     </style>
 </head>
 <body>
@@ -125,10 +141,8 @@
         <div class="splash-content">
             <img id="espol-logo" src="https://upload.wikimedia.org/wikipedia/commons/d/d9/ESPOL_-_Logo_BN_002.svg" alt="Logo ESPOL">
             <h1>Bienvenido a CriptoSuite</h1>
-            <p>Una herramienta académica complemento de enseñanza para el módulo de Criptografía<br><b>Escuela Superior Politécnica del Litoral</b></p>
+            <p>Una herramienta académica para la materia de Criptografía<br><b>Escuela Superior Politécnica del Litoral</b></p>
             <button id="start-button">Iniciar</button>
-              <!-- Copyright -->
-        <p class="copyright">© 2025 CriptoSuite - ESPOL</p>
         </div>
     </div>
 
@@ -142,248 +156,82 @@
             <button class="nav-button" data-tool="rsa">Criptosistema RSA</button>
             <button class="nav-button" data-tool="euclides">Euclides y MCD</button>
             <button class="nav-button" data-tool="tcr">Teorema Chino del Residuo</button>
+            <hr style="margin: 10px 0;">
+            <button class="nav-button" data-tool="recursos">Recursos y Descargas</button>
         </div>
 
         <div class="content-area">
-            <!-- Cifrado César -->
+            <!-- Paneles de Herramientas (existentes) -->
             <div id="cesar" class="tool-container active">
-                <div class="controls-panel">
-                    <h2>Controles: Cifrado César</h2>
-                    <div class="form-group">
-                        <label for="cesarText">Texto:</label>
-                        <textarea id="cesarText" rows="4">HELLO WORLD</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="cesarK">Desplazamiento (k):</label>
-                        <input type="number" id="cesarK" value="3" min="0" max="25">
-                    </div>
-                    <div class="form-group">
-                        <label>Modo:</label>
-                        <div class="radio-group">
-                            <label><input type="radio" name="cesarMode" value="enc" checked> Encriptar</label>
-                            <label><input type="radio" name="cesarMode" value="dec"> Desencriptar</label>
-                        </div>
-                    </div>
-                    <hr>
-                    <button class="action-button" id="cesarExecute">Ejecutar</button>
-                </div>
-                <div class="output-panel">
-                     <div class="result-display">
-                        <div class="result-title">Resultado Final</div>
-                        <div class="result-text" id="cesarResultText">-</div>
-                    </div>
-                    <h2>Proceso Matemático</h2>
-                    <div class="steps-container">
-                        <table class="steps-table" id="cesarStepsTable"></table>
-                    </div>
-                </div>
+                <div class="controls-panel"><h2>Controles: Cifrado César</h2><div class="form-group"><label for="cesarText">Texto:</label><textarea id="cesarText" rows="4">HELLO WORLD</textarea></div><div class="form-group"><label for="cesarK">Desplazamiento (k):</label><input type="number" id="cesarK" value="3" min="0" max="25"></div><div class="form-group"><label>Modo:</label><div class="radio-group"><label><input type="radio" name="cesarMode" value="enc" checked> Encriptar</label><label><input type="radio" name="cesarMode" value="dec"> Desencriptar</label></div></div><hr><button class="action-button" id="cesarExecute">Ejecutar</button></div>
+                <div class="output-panel"><div class="result-display"><div class="result-title">Resultado Final</div><div class="result-text" id="cesarResultText">-</div></div><h2>Proceso Matemático</h2><div class="steps-container"><table class="steps-table" id="cesarStepsTable"></table></div></div>
             </div>
-            <!-- Cifrado Afín -->
             <div id="afin" class="tool-container">
-                <div class="controls-panel">
-                    <h2>Controles: Cifrado Afín</h2>
-                    <div class="form-group">
-                        <label for="afinText">Texto:</label>
-                        <textarea id="afinText" rows="4">AFFINE CIPHER</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="afinA">Valor 'a' (coprimo con 26):</label>
-                        <select id="afinA"></select>
-                    </div>
-                    <div class="form-group">
-                        <label for="afinB">Valor 'b':</label>
-                        <input type="number" id="afinB" value="8" min="0">
-                    </div>
-                    <div class="form-group">
-                        <label>Modo:</label>
-                        <div class="radio-group">
-                            <label><input type="radio" name="afinMode" value="enc" checked> Encriptar</label>
-                            <label><input type="radio" name="afinMode" value="dec"> Desencriptar</label>
-                        </div>
-                    </div>
-                    <hr>
-                    <button class="action-button" id="afinExecute">Ejecutar</button>
-                </div>
-                <div class="output-panel">
-                     <div class="result-display">
-                        <div class="result-title">Resultado Final</div>
-                        <div class="result-text" id="afinResultText">-</div>
-                    </div>
-                    <h2>Proceso Matemático</h2>
-                    <div class="steps-container">
-                        <table class="steps-table" id="afinStepsTable"></table>
-                    </div>
-                </div>
+                <div class="controls-panel"><h2>Controles: Cifrado Afín</h2><div class="form-group"><label for="afinText">Texto:</label><textarea id="afinText" rows="4">AFFINE CIPHER</textarea></div><div class="form-group"><label for="afinA">Valor 'a' (coprimo con 26):</label><select id="afinA"></select></div><div class="form-group"><label for="afinB">Valor 'b':</label><input type="number" id="afinB" value="8" min="0"></div><div class="form-group"><label>Modo:</label><div class="radio-group"><label><input type="radio" name="afinMode" value="enc" checked> Encriptar</label><label><input type="radio" name="afinMode" value="dec"> Desencriptar</label></div></div><hr><button class="action-button" id="afinExecute">Ejecutar</button></div>
+                <div class="output-panel"><div class="result-display"><div class="result-title">Resultado Final</div><div class="result-text" id="afinResultText">-</div></div><h2>Proceso Matemático</h2><div class="steps-container"><table class="steps-table" id="afinStepsTable"></table></div></div>
             </div>
-            <!-- Cifrado Vigenere -->
             <div id="vigenere" class="tool-container">
-                <div class="controls-panel">
-                    <h2>Controles: Cifrado Vigenère</h2>
-                    <div class="form-group">
-                        <label for="vigenereText">Texto:</label>
-                        <textarea id="vigenereText" rows="4">ATTACK AT DAWN</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="vigenereKey">Clave:</label>
-                        <input type="text" id="vigenereKey" value="LEMON">
-                    </div>
-                    <div class="form-group">
-                        <label>Modo:</label>
-                        <div class="radio-group">
-                            <label><input type="radio" name="vigenereMode" value="enc" checked> Encriptar</label>
-                            <label><input type="radio" name="vigenereMode" value="dec"> Desencriptar</label>
-                        </div>
-                    </div>
-                    <hr>
-                    <button class="action-button" id="vigenereExecute">Ejecutar</button>
-                </div>
-                <div class="output-panel">
-                     <div class="result-display">
-                        <div class="result-title">Resultado Final</div>
-                        <div class="result-text" id="vigenereResultText">-</div>
-                    </div>
-                    <h2>Proceso Matemático</h2>
-                    <div class="steps-container">
-                        <table class="steps-table" id="vigenereStepsTable"></table>
-                    </div>
-                </div>
+                <div class="controls-panel"><h2>Controles: Cifrado Vigenère</h2><div class="form-group"><label for="vigenereText">Texto:</label><textarea id="vigenereText" rows="4">ATTACK AT DAWN</textarea></div><div class="form-group"><label for="vigenereKey">Clave:</label><input type="text" id="vigenereKey" value="LEMON"></div><div class="form-group"><label>Modo:</label><div class="radio-group"><label><input type="radio" name="vigenereMode" value="enc" checked> Encriptar</label><label><input type="radio" name="vigenereMode" value="dec"> Desencriptar</label></div></div><hr><button class="action-button" id="vigenereExecute">Ejecutar</button></div>
+                <div class="output-panel"><div class="result-display"><div class="result-title">Resultado Final</div><div class="result-text" id="vigenereResultText">-</div></div><h2>Proceso Matemático</h2><div class="steps-container"><table class="steps-table" id="vigenereStepsTable"></table></div></div>
             </div>
-            <!-- One-Time Pad -->
             <div id="otp" class="tool-container">
-                <div class="controls-panel">
-                    <h2>Controles: One-Time Pad</h2>
-                    <div class="form-group">
-                        <label for="otpText">Texto:</label>
-                        <textarea id="otpText" rows="4">SECRET MESSAGE</textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="otpKey">Clave (misma longitud que el texto):</label>
-                        <input type="text" id="otpKey">
-                    </div>
-                    <button id="otpGenerateKey" class="action-button" style="background-color: #34c759;">Generar Clave Aleatoria</button>
-                    <div class="form-group" style="margin-top: 15px;">
-                        <label>Modo:</label>
-                        <div class="radio-group">
-                            <label><input type="radio" name="otpMode" value="enc" checked> Encriptar</label>
-                            <label><input type="radio" name="otpMode" value="dec"> Desencriptar</label>
-                        </div>
-                    </div>
-                    <hr>
-                    <button class="action-button" id="otpExecute">Ejecutar</button>
-                </div>
-                <div class="output-panel">
-                     <div class="result-display">
-                        <div class="result-title">Resultado Final</div>
-                        <div class="result-text" id="otpResultText">-</div>
-                    </div>
-                    <h2>Proceso Matemático (C = P + K mod 26)</h2>
-                    <div class="steps-container">
-                        <table class="steps-table" id="otpStepsTable"></table>
-                    </div>
-                </div>
+                <div class="controls-panel"><h2>Controles: One-Time Pad</h2><div class="form-group"><label for="otpText">Texto:</label><textarea id="otpText" rows="4">SECRET MESSAGE</textarea></div><div class="form-group"><label for="otpKey">Clave (misma longitud que el texto):</label><input type="text" id="otpKey"></div><button id="otpGenerateKey" class="action-button" style="background-color: #34c759;">Generar Clave Aleatoria</button><div class="form-group" style="margin-top: 15px;"><label>Modo:</label><div class="radio-group"><label><input type="radio" name="otpMode" value="enc" checked> Encriptar</label><label><input type="radio" name="otpMode" value="dec"> Desencriptar</label></div></div><hr><button class="action-button" id="otpExecute">Ejecutar</button></div>
+                <div class="output-panel"><div class="result-display"><div class="result-title">Resultado Final</div><div class="result-text" id="otpResultText">-</div></div><h2>Proceso Matemático (C = P + K mod 26)</h2><div class="steps-container"><table class="steps-table" id="otpStepsTable"></table></div></div>
             </div>
-            <!-- RSA -->
             <div id="rsa" class="tool-container">
-                <div class="controls-panel">
-                    <h2>Controles: Criptosistema RSA</h2>
-                    <div class="form-group">
-                        <fieldset>
-                            <legend>1. Generación de Claves</legend>
-                            <label for="rsaP">Número primo (p):</label>
-                            <input type="number" id="rsaP" value="61">
-                            <div id="rsaP-validation" class="validation-message"></div>
-                            
-                            <label for="rsaQ">Número primo (q):</label>
-                            <input type="number" id="rsaQ" value="53">
-                            <div id="rsaQ-validation" class="validation-message"></div>
-
-                            <label for="rsaE">Exponente público (e):</label>
-                            <input type="number" id="rsaE" value="17">
-                            <div id="rsaE-validation" class="validation-message"></div>
-                            
-                            <button id="rsaGenerateKeys" class="action-button" style="margin-top: 10px;">Generar y Mostrar Claves</button>
-                            <hr>
-                            <label>Clave Pública (N, e):</label>
-                            <input type="text" id="rsaPublicKey" readonly>
-                            <label>Clave Privada (d):</label>
-                            <input type="text" id="rsaPrivateKey" readonly>
-                             <label>Módulo (N):</label>
-                            <input type="text" id="rsaN" readonly>
-                            <label>Phi(N) - φ(N):</label>
-                            <input type="text" id="rsaPhiN" readonly>
-                        </fieldset>
-                    </div>
-                     <div class="form-group">
-                        <fieldset>
-                            <legend>2. Cifrado / Descifrado</legend>
-                            <label for="rsaText">Texto o Números (separados por coma):</label>
-                            <textarea id="rsaText" rows="3">RSA encrypted phrase</textarea>
-                            <div class="radio-group" style="margin-top:10px;">
-                                <label><input type="radio" name="rsaMode" value="enc" checked> Encriptar</label>
-                                <label><input type="radio" name="rsaMode" value="dec"> Desencriptar</label>
-                            </div>
-                        </fieldset>
-                    </div>
-                    <hr>
-                    <button class="action-button" id="rsaExecute">Ejecutar</button>
-                </div>
-                <div class="output-panel">
-                     <div class="result-display">
-                        <div class="result-title">Resultado Final</div>
-                        <div class="result-text" id="rsaResultText">-</div>
-                    </div>
-                    <h2>Proceso Matemático</h2>
-                    <div class="steps-container">
-                        <table class="steps-table" id="rsaStepsTable"></table>
-                    </div>
-                </div>
+                <div class="controls-panel"><h2>Controles: Criptosistema RSA</h2><div class="form-group"><fieldset><legend>1. Generación de Claves</legend><label for="rsaP">Número primo (p):</label><input type="number" id="rsaP" value="61"><div id="rsaP-validation" class="validation-message"></div><label for="rsaQ">Número primo (q):</label><input type="number" id="rsaQ" value="53"><div id="rsaQ-validation" class="validation-message"></div><label for="rsaE">Exponente público (e):</label><input type="number" id="rsaE" value="17"><div id="rsaE-validation" class="validation-message"></div><button id="rsaGenerateKeys" class="action-button" style="margin-top: 10px;">Generar y Mostrar Claves</button><hr><label>Clave Pública (N, e):</label><input type="text" id="rsaPublicKey" readonly><label>Clave Privada (d):</label><input type="text" id="rsaPrivateKey" readonly><label>Módulo (N):</label><input type="text" id="rsaN" readonly><label>Phi(N) - φ(N):</label><input type="text" id="rsaPhiN" readonly></fieldset></div><div class="form-group"><fieldset><legend>2. Cifrado / Descifrado</legend><label for="rsaText">Texto o Números (separados por coma):</label><textarea id="rsaText" rows="3"></textarea><div class="radio-group" style="margin-top:10px;"><label><input type="radio" name="rsaMode" value="enc" checked> Encriptar</label><label><input type="radio" name="rsaMode" value="dec"> Desencriptar</label></div></fieldset></div><hr><button class="action-button" id="rsaExecute">Ejecutar</button></div>
+                <div class="output-panel"><div class="result-display"><div class="result-title">Resultado Final</div><div class="result-text" id="rsaResultText">-</div></div><h2>Proceso Matemático</h2><div class="steps-container"><table class="steps-table" id="rsaStepsTable"></table></div></div>
             </div>
-            <!-- Euclides y MCD -->
             <div id="euclides" class="tool-container">
-                <div class="controls-panel">
-                    <h2>Controles: Euclides y MCD</h2>
-                    <div class="form-group">
-                        <label for="euclidesA">Valor 'a':</label>
-                        <input type="number" id="euclidesA" value="391">
-                    </div>
-                    <div class="form-group">
-                        <label for="euclidesB">Valor 'b':</label>
-                        <input type="number" id="euclidesB" value="299">
-                    </div>
-                    <hr>
-                    <button class="action-button" id="euclidesExecute">Calcular</button>
-                </div>
-                <div class="output-panel">
-                     <div class="result-display">
-                        <div class="result-title">Resultado Final</div>
-                        <div class="result-text" id="euclidesResultText">-</div>
-                    </div>
-                    <h2>Proceso Matemático (Algoritmo de Euclides)</h2>
-                    <div class="steps-container">
-                        <table class="steps-table" id="euclidesStepsTable"></table>
-                    </div>
-                </div>
+                <div class="controls-panel"><h2>Controles: Euclides y MCD</h2><div class="form-group"><label for="euclidesA">Valor 'a':</label><input type="number" id="euclidesA" value="391"></div><div class="form-group"><label for="euclidesB">Valor 'b':</label><input type="number" id="euclidesB" value="299"></div><hr><button class="action-button" id="euclidesExecute">Calcular</button></div>
+                <div class="output-panel"><div class="result-display"><div class="result-title">Resultado Final</div><div class="result-text" id="euclidesResultText">-</div></div><h2>Proceso Matemático (Algoritmo de Euclides)</h2><div class="steps-container"><table class="steps-table" id="euclidesStepsTable"></table></div></div>
             </div>
-            <!-- Teorema Chino del Residuo -->
             <div id="tcr" class="tool-container">
-                <div class="controls-panel">
-                    <h2>Controles: T. Chino del Residuo</h2>
-                    <div class="form-group" id="tcrCongruences">
-                        <label>Sistema de Congruencias:</label>
+                <div class="controls-panel"><h2>Controles: T. Chino del Residuo</h2><div class="form-group" id="tcrCongruences"><label>Sistema de Congruencias:</label></div><button id="tcrAddRow" class="action-button" style="background-color: #34c759;">Añadir Fila</button><hr><button class="action-button" id="tcrExecute">Resolver Sistema</button></div>
+                <div class="output-panel"><div class="result-display"><div class="result-title">Resultado Final</div><div class="result-text" id="tcrResultText">-</div></div><h2>Proceso Matemático</h2><div class="steps-container"><table class="steps-table" id="tcrStepsTable"></table></div></div>
+            </div>
+
+            <!-- Panel de Recursos y Descargas -->
+            <div id="recursos" class="tool-container">
+                <div style="grid-column: 1 / -1;">
+                    <h2>Recursos y Descargas</h2>
+                    
+                    <div class="resource-card">
+                        <div class="resource-info">
+                            <h3>Aplicación de Escritorio (Windows)</h3>
+                            <p>Versión ejecutable (.exe) que no requiere tener Python instalado.</p>
+                        </div>
+                        <!-- MODIFICADO: Apunta al archivo local -->
+                        <a href="./CriptoSuite.exe" download class="action-button">
+                            <svg class="resource-icon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                            Descargar (.exe)
+                        </a>
                     </div>
-                     <button id="tcrAddRow" class="action-button" style="background-color: #34c759;">Añadir Fila</button>
-                    <hr>
-                    <button class="action-button" id="tcrExecute">Resolver Sistema</button>
-                </div>
-                <div class="output-panel">
-                     <div class="result-display">
-                        <div class="result-title">Resultado Final</div>
-                        <div class="result-text" id="tcrResultText">-</div>
+                    
+                    <div class="resource-card">
+                        <div class="resource-info">
+                            <h3>Código Fuente (Python)</h3>
+                            <p>Script .py de la aplicación de escritorio. Requiere Python y sv-ttk.</p>
+                        </div>
+                        <!-- MODIFICADO: Apunta al archivo local -->
+                        <a href="./criptosuite.py" download class="action-button">
+                             <svg class="resource-icon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                            Descargar (.py)
+                        </a>
                     </div>
-                    <h2>Proceso Matemático</h2>
-                    <div class="steps-container">
-                        <table class="steps-table" id="tcrStepsTable"></table>
+
+                    <div class="resource-card">
+                        <div class="resource-info">
+                            <h3>Código Fuente (Página Web)</h3>
+                            <p>El código fuente de esta misma página web, listo para usar localmente.</p>
+                        </div>
+                        <!-- MODIFICADO: Apunta al archivo local -->
+                        <a href="./criptosuite.html" download class="action-button">
+                             <svg class="resource-icon" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16"><path d="M.5 9.9a.5.5 0 0 1 .5.5v2.5a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-2.5a.5.5 0 0 1 1 0v2.5a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2v-2.5a.5.5 0 0 1 .5-.5z"/><path d="M7.646 11.854a.5.5 0 0 0 .708 0l3-3a.5.5 0 0 0-.708-.708L8.5 10.293V1.5a.5.5 0 0 0-1 0v8.793L5.354 8.146a.5.5 0 1 0-.708.708l3 3z"/></svg>
+                            Descargar (.html)
+                        </a>
                     </div>
+
                 </div>
             </div>
         </div>
@@ -405,6 +253,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // --- LÓGICA DE LA PANTALLA DE BIENVENIDA ---
     const splashScreen = document.getElementById('splash-screen');
     const mainApp = document.getElementById('main-app');
     const startButton = document.getElementById('start-button');
@@ -414,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { splashScreen.style.display = 'none'; }, 700);
     });
 
+    // --- SISTEMA DE MODAL ---
     const modal = {
         overlay: document.getElementById('modal-overlay'),
         title: document.getElementById('modal-title'),
@@ -431,6 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     modal.init();
 
+    // --- LÓGICA PRINCIPAL DE LA APLICACIÓN ---
     const app = {
         ALPHABET: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
         mcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; },
@@ -460,8 +311,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 let p_ok = false, q_ok = false, e_ok = false;
                 const p = parseInt(p_input.value, 10); const q = parseInt(q_input.value, 10); const e = parseInt(e_input.value, 10);
                 if (!isNaN(p)) { if (!this.isPrime(p)) { p_val.textContent = "p debe ser un número primo."; p_val.style.display = 'block'; p_input.classList.add('invalid'); } else { p_val.style.display = 'none'; p_input.classList.remove('invalid'); p_ok = true; } }
-                if (!isNaN(q)) { if (!this.isPrime(q)) { q_val.textContent = "q debe ser un número primo."; q_val.style.display = 'block'; q_input.classList.add('invalid'); } else if (p === q) { q_val.textContent = "p y q no pueden ser iguales."; q_val.style.display = 'block'; q_input.classList.add('invalid'); } else { q_val.style.display = 'none'; q_input.classList.remove('invalid'); q_ok = true; } }
-                if (p_ok && q_ok) { const phiN = (p - 1) * (q - 1); if (!isNaN(e)) { if (this.mcd(e, phiN) !== 1) { e_val.textContent = `e debe ser coprimo con φ(N) = ${phiN}.`; e_val.style.display = 'block'; e_input.classList.add('invalid');} else if (e <= 1 || e >= phiN) { e_val.textContent = `e debe estar entre 1 y ${phiN}.`; e_val.style.display = 'block'; e_input.classList.add('invalid');} else { e_val.style.display = 'none'; e_input.classList.remove('invalid'); e_ok = true; } } } else { e_val.textContent = 'p y q deben ser primos válidos primero.'; e_val.style.display = 'block'; }
+                if (!isNaN(q)) { if (!this.isPrime(q)) { q_val.textContent = "q debe ser un número primo."; q_val.style.display = 'block'; q_input.classList.add('invalid'); } else if (p_ok && p === q) { q_val.textContent = "p y q no pueden ser iguales."; q_val.style.display = 'block'; q_input.classList.add('invalid'); } else { q_val.style.display = 'none'; q_input.classList.remove('invalid'); q_ok = true; } }
+                if (p_ok && q_ok) { const phiN = (p - 1) * (q - 1); if (!isNaN(e)) { if (this.mcd(e, phiN) !== 1) { e_val.textContent = `e debe ser coprimo con φ(N) = ${phiN}.`; e_val.style.display = 'block'; e_input.classList.add('invalid');} else if (e <= 1 || e >= phiN) { e_val.textContent = `e debe estar entre 1 y ${phiN}.`; e_val.style.display = 'block'; e_input.classList.add('invalid');} else { e_val.style.display = 'none'; e_input.classList.remove('invalid'); e_ok = true; } } } else { e_val.textContent = 'p y q deben ser válidos primero.'; e_val.style.display = 'block'; }
                 gen_button.disabled = !(p_ok && q_ok && e_ok);
             };
             [p_input, q_input, e_input].forEach(el => el.addEventListener('input', validate_rsa_inputs));
@@ -479,6 +330,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
 
 
 
