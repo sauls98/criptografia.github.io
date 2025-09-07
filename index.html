@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- SOLUCI√ìN: Esta metaetiqueta fuerza al navegador a usar UTF-8 -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CriptoSuite Profesional Web</title>
@@ -77,7 +78,7 @@
             padding: 10px 20px; border-radius: 8px; font-weight: 500; cursor: pointer;
         }
         
-        /* --- AplicaciÛn Principal --- */
+        /* --- Aplicaci√≥n Principal --- */
         #main-app { display: flex; width: 100%; height: 100%; opacity: 0; visibility: hidden; transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1); }
         #main-app.visible { opacity: 1; visibility: visible; }
         .sidebar { background-color: var(--surface-color); padding: 20px; width: 250px; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; box-shadow: 2px 0 5px rgba(0,0,0,0.05); flex-shrink: 0; }
@@ -124,7 +125,7 @@
         <div class="splash-content">
             <img id="espol-logo" src="https://upload.wikimedia.org/wikipedia/commons/d/d9/ESPOL_-_Logo_BN_002.svg" alt="Logo ESPOL">
             <h1>Bienvenido a CriptoSuite</h1>
-            <p>Una herramienta acadÈmica del mÛdulo de CriptografÌa<br><b>Escuela Superior PolitÈcnica del Litoral</b></p>
+            <p>Una herramienta acad√©mica para la materia de Criptograf√≠a<br><b>Escuela Superior Polit√©cnica del Litoral</b></p>
             <button id="start-button">Iniciar</button>
         </div>
     </div>
@@ -132,9 +133,9 @@
     <div id="main-app">
         <div class="sidebar">
             <h1>CriptoSuite</h1>
-            <button class="nav-button active" data-tool="cesar">Cifrado CÈsar</button>
-            <button class="nav-button" data-tool="afin">Cifrado AfÌn</button>
-            <button class="nav-button" data-tool="vigenere">Cifrado VigenËre</button>
+            <button class="nav-button active" data-tool="cesar">Cifrado C√©sar</button>
+            <button class="nav-button" data-tool="afin">Cifrado Af√≠n</button>
+            <button class="nav-button" data-tool="vigenere">Cifrado Vigen√®re</button>
             <button class="nav-button" data-tool="otp">One-Time Pad</button>
             <button class="nav-button" data-tool="rsa">Criptosistema RSA</button>
             <button class="nav-button" data-tool="euclides">Euclides y MCD</button>
@@ -142,11 +143,10 @@
         </div>
 
         <div class="content-area">
-            <!-- Paneles de Herramientas (sin cambios en su estructura interna) -->
-            <!-- Cifrado CÈsar -->
+            <!-- Cifrado C√©sar -->
             <div id="cesar" class="tool-container active">
                 <div class="controls-panel">
-                    <h2>Controles: Cifrado CÈsar</h2>
+                    <h2>Controles: Cifrado C√©sar</h2>
                     <div class="form-group">
                         <label for="cesarText">Texto:</label>
                         <textarea id="cesarText" rows="4">HELLO WORLD</textarea>
@@ -170,16 +170,16 @@
                         <div class="result-title">Resultado Final</div>
                         <div class="result-text" id="cesarResultText">-</div>
                     </div>
-                    <h2>Proceso Matem·tico</h2>
+                    <h2>Proceso Matem√°tico</h2>
                     <div class="steps-container">
                         <table class="steps-table" id="cesarStepsTable"></table>
                     </div>
                 </div>
             </div>
-            <!-- Cifrado AfÌn -->
+            <!-- Cifrado Af√≠n -->
             <div id="afin" class="tool-container">
                 <div class="controls-panel">
-                    <h2>Controles: Cifrado AfÌn</h2>
+                    <h2>Controles: Cifrado Af√≠n</h2>
                     <div class="form-group">
                         <label for="afinText">Texto:</label>
                         <textarea id="afinText" rows="4">AFFINE CIPHER</textarea>
@@ -207,7 +207,7 @@
                         <div class="result-title">Resultado Final</div>
                         <div class="result-text" id="afinResultText">-</div>
                     </div>
-                    <h2>Proceso Matem·tico</h2>
+                    <h2>Proceso Matem√°tico</h2>
                     <div class="steps-container">
                         <table class="steps-table" id="afinStepsTable"></table>
                     </div>
@@ -216,7 +216,7 @@
             <!-- Cifrado Vigenere -->
             <div id="vigenere" class="tool-container">
                 <div class="controls-panel">
-                    <h2>Controles: Cifrado VigenËre</h2>
+                    <h2>Controles: Cifrado Vigen√®re</h2>
                     <div class="form-group">
                         <label for="vigenereText">Texto:</label>
                         <textarea id="vigenereText" rows="4">ATTACK AT DAWN</textarea>
@@ -240,7 +240,7 @@
                         <div class="result-title">Resultado Final</div>
                         <div class="result-text" id="vigenereResultText">-</div>
                     </div>
-                    <h2>Proceso Matem·tico</h2>
+                    <h2>Proceso Matem√°tico</h2>
                     <div class="steps-container">
                         <table class="steps-table" id="vigenereStepsTable"></table>
                     </div>
@@ -274,7 +274,7 @@
                         <div class="result-title">Resultado Final</div>
                         <div class="result-text" id="otpResultText">-</div>
                     </div>
-                    <h2>Proceso Matem·tico (C = P + K mod 26)</h2>
+                    <h2>Proceso Matem√°tico (C = P + K mod 26)</h2>
                     <div class="steps-container">
                         <table class="steps-table" id="otpStepsTable"></table>
                     </div>
@@ -286,36 +286,36 @@
                     <h2>Controles: Criptosistema RSA</h2>
                     <div class="form-group">
                         <fieldset>
-                            <legend>1. GeneraciÛn de Claves</legend>
-                            <label for="rsaP">N˙mero primo (p):</label>
+                            <legend>1. Generaci√≥n de Claves</legend>
+                            <label for="rsaP">N√∫mero primo (p):</label>
                             <input type="number" id="rsaP" value="61">
                             <div id="rsaP-validation" class="validation-message"></div>
                             
-                            <label for="rsaQ">N˙mero primo (q):</label>
+                            <label for="rsaQ">N√∫mero primo (q):</label>
                             <input type="number" id="rsaQ" value="53">
                             <div id="rsaQ-validation" class="validation-message"></div>
 
-                            <label for="rsaE">Exponente p˙blico (e):</label>
+                            <label for="rsaE">Exponente p√∫blico (e):</label>
                             <input type="number" id="rsaE" value="17">
                             <div id="rsaE-validation" class="validation-message"></div>
                             
                             <button id="rsaGenerateKeys" class="action-button" style="margin-top: 10px;">Generar y Mostrar Claves</button>
                             <hr>
-                            <label>Clave P˙blica (N, e):</label>
+                            <label>Clave P√∫blica (N, e):</label>
                             <input type="text" id="rsaPublicKey" readonly>
                             <label>Clave Privada (d):</label>
                             <input type="text" id="rsaPrivateKey" readonly>
-                             <label>MÛdulo (N):</label>
+                             <label>M√≥dulo (N):</label>
                             <input type="text" id="rsaN" readonly>
-                            <label>Phi(N) - f(N):</label>
+                            <label>Phi(N) - œÜ(N):</label>
                             <input type="text" id="rsaPhiN" readonly>
                         </fieldset>
                     </div>
                      <div class="form-group">
                         <fieldset>
                             <legend>2. Cifrado / Descifrado</legend>
-                            <label for="rsaText">Texto o N˙meros (separados por coma):</label>
-                            <textarea id="rsaText" rows="3">Ciphered Phrase</textarea>
+                            <label for="rsaText">Texto o N√∫meros (separados por coma):</label>
+                            <textarea id="rsaText" rows="3"></textarea>
                             <div class="radio-group" style="margin-top:10px;">
                                 <label><input type="radio" name="rsaMode" value="enc" checked> Encriptar</label>
                                 <label><input type="radio" name="rsaMode" value="dec"> Desencriptar</label>
@@ -330,7 +330,7 @@
                         <div class="result-title">Resultado Final</div>
                         <div class="result-text" id="rsaResultText">-</div>
                     </div>
-                    <h2>Proceso Matem·tico</h2>
+                    <h2>Proceso Matem√°tico</h2>
                     <div class="steps-container">
                         <table class="steps-table" id="rsaStepsTable"></table>
                     </div>
@@ -356,7 +356,7 @@
                         <div class="result-title">Resultado Final</div>
                         <div class="result-text" id="euclidesResultText">-</div>
                     </div>
-                    <h2>Proceso Matem·tico (Algoritmo de Euclides)</h2>
+                    <h2>Proceso Matem√°tico (Algoritmo de Euclides)</h2>
                     <div class="steps-container">
                         <table class="steps-table" id="euclidesStepsTable"></table>
                     </div>
@@ -369,7 +369,7 @@
                     <div class="form-group" id="tcrCongruences">
                         <label>Sistema de Congruencias:</label>
                     </div>
-                     <button id="tcrAddRow" class="action-button" style="background-color: #34c759;">AÒadir Fila</button>
+                     <button id="tcrAddRow" class="action-button" style="background-color: #34c759;">A√±adir Fila</button>
                     <hr>
                     <button class="action-button" id="tcrExecute">Resolver Sistema</button>
                 </div>
@@ -378,7 +378,7 @@
                         <div class="result-title">Resultado Final</div>
                         <div class="result-text" id="tcrResultText">-</div>
                     </div>
-                    <h2>Proceso Matem·tico</h2>
+                    <h2>Proceso Matem√°tico</h2>
                     <div class="steps-container">
                         <table class="steps-table" id="tcrStepsTable"></table>
                     </div>
@@ -403,7 +403,6 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    // --- L”GICA DE LA PANTALLA DE BIENVENIDA ---
     const splashScreen = document.getElementById('splash-screen');
     const mainApp = document.getElementById('main-app');
     const startButton = document.getElementById('start-button');
@@ -413,7 +412,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { splashScreen.style.display = 'none'; }, 700);
     });
 
-    // --- SISTEMA DE MODAL ---
     const modal = {
         overlay: document.getElementById('modal-overlay'),
         title: document.getElementById('modal-title'),
@@ -431,398 +429,47 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     modal.init();
 
-    // --- L”GICA PRINCIPAL DE LA APLICACI”N ---
     const app = {
         ALPHABET: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ',
-        
-        // ... (resto de la lÛgica de app, sin cambios en las funciones matem·ticas)
-        mcd(a, b) {
-            a = Math.abs(a); b = Math.abs(b);
-            while (b) { [a, b] = [b, a % b]; }
-            return a;
-        },
-        egcd(a, b) {
-            if (a === 0) return [b, 0, 1];
-            const [g, y, x] = this.egcd(b % a, a);
-            return [g, x - Math.floor(b / a) * y, y];
-        },
-        modinv(a, m) {
-            const [g, x, y] = this.egcd(a, m);
-            if (g !== 1) throw new Error(`La inversa modular de ${a} mod ${m} no existe (MCD=${g} ? 1).`);
-            return (x % m + m) % m;
-        },
-        power(base, exp, mod) {
-            let res = 1n; base = BigInt(base); exp = BigInt(exp); mod = BigInt(mod);
-            base %= mod;
-            while (exp > 0) {
-                if (exp % 2n === 1n) res = (res * base) % mod;
-                exp = exp >> 1n; base = (base * base) % mod;
-            }
-            return Number(res);
-        },
-        isPrime(num) {
-            if (num <= 1) return false; if (num <= 3) return true;
-            if (num % 2 === 0 || num % 3 === 0) return false;
-            for (let i = 5; i * i <= num; i = i + 6) {
-                if (num % i === 0 || num % (i + 2) === 0) return false;
-            }
-            return true;
-        },
-        caesar_cipher(text, k, decrypt = false) {
-            const op = decrypt ? -1 : 1, effectiveK = op * k;
-            let result = ''; const steps = [];
-            for (const char of text) {
-                if (this.ALPHABET.includes(char.toUpperCase())) {
-                    const charCode = char.charCodeAt(0), base = charCode >= 97 ? 97 : 65;
-                    const p_idx = charCode - base;
-                    const c_idx = (p_idx + effectiveK + 26) % 26;
-                    const newChar = String.fromCharCode(base + c_idx);
-                    result += newChar;
-                    steps.push({ in: `'${char}'`, p_idx, calc: `(${p_idx} ${decrypt ? '-' : '+'} ${k}) mod 26`, c_idx, out: `'${newChar}'` });
-                } else {
-                    result += char; steps.push({ in: `'${char}'`, p_idx: 'N/A', calc: 'No es letra', c_idx: 'N/A', out: `'${char}'` });
-                }
-            } return { result, steps };
-        },
-        affine_cipher(text, a, b, decrypt = false) {
-            let result = ''; const steps = [];
-            if (decrypt) {
-                const a_inv = this.modinv(a, 26);
-                steps.push({ header: `Paso 1: Inversa de a=${a} mod 26 => a?π=${a_inv}` });
-                for (const char of text) {
-                     if (this.ALPHABET.includes(char.toUpperCase())) {
-                        const p_idx = this.ALPHABET.indexOf(char.toUpperCase());
-                        const c_idx = (a_inv * (p_idx - b) + 520) % 26; // Usar un m˙ltiplo de 26 para evitar negativos
-                        const newChar = this.ALPHABET[c_idx];
-                        result += char === char.toLowerCase() ? newChar.toLowerCase() : newChar;
-                        steps.push({ in: `'${char}'`, p_idx, calc: `${a_inv}*(${p_idx}-${b}) mod 26`, c_idx, out: `'${newChar}'` });
-                    } else {
-                        result += char; steps.push({ in: `'${char}'`, p_idx: 'N/A', calc: 'No es letra', c_idx: 'N/A', out: `'${char}'` });
-                    }
-                }
-            } else {
-                for (const char of text) {
-                    if (this.ALPHABET.includes(char.toUpperCase())) {
-                        const p_idx = this.ALPHABET.indexOf(char.toUpperCase());
-                        const c_idx = (a * p_idx + b) % 26;
-                        const newChar = this.ALPHABET[c_idx];
-                        result += char === char.toLowerCase() ? newChar.toLowerCase() : newChar;
-                        steps.push({ in: `'${char}'`, p_idx, calc: `(${a}*${p_idx}+${b}) mod 26`, c_idx, out: `'${newChar}'` });
-                    } else {
-                        result += char; steps.push({ in: `'${char}'`, p_idx: 'N/A', calc: 'No es letra', c_idx: 'N/A', out: `'${char}'` });
-                    }
-                }
-            } return { result, steps };
-        },
-        vigenere_cipher(text, key, decrypt = false) {
-            const cleanKey = key.toUpperCase().replace(/[^A-Z]/g, '');
-            if (!cleanKey) throw new Error("La clave debe contener letras.");
-            let result = '', steps = [], keyIndex = 0;
-            for (const char of text) {
-                if (this.ALPHABET.includes(char.toUpperCase())) {
-                    const k_char = cleanKey[keyIndex % cleanKey.length];
-                    const k_shift = this.ALPHABET.indexOf(k_char);
-                    const { result: sub_res, steps: sub_steps } = this.caesar_cipher(char, k_shift, decrypt);
-                    result += sub_res;
-                    steps.push({in: `'${char}'`, key: `'${k_char}'`, shift: k_shift, calc: sub_steps[0].calc, out: sub_steps[0].out});
-                    keyIndex++;
-                } else {
-                    result += char; steps.push({in: `'${char}'`, key: 'N/A', shift: 'N/A', calc: 'No es letra', out: `'${char}'`});
-                }
-            } return { result, steps };
-        },
-        one_time_pad_cipher(text, key, decrypt = false) {
-            const cleanKey = key.toUpperCase().replace(/[^A-Z]/g, '');
-            const cleanText = text.toUpperCase().replace(/[^A-Z]/g, '');
-            if (cleanKey.length !== cleanText.length) throw new Error("La longitud del texto (solo letras) y la clave deben ser iguales.");
-            let result = '', steps = [], textIndex = 0;
-             for (let i = 0; i < text.length; i++) {
-                const char = text[i];
-                if (this.ALPHABET.includes(char.toUpperCase())) {
-                    const k_char = cleanKey[textIndex];
-                    const k_shift = this.ALPHABET.indexOf(k_char);
-                    const { result: sub_res, steps: sub_steps } = this.caesar_cipher(char, k_shift, decrypt);
-                    result += sub_res;
-                    steps.push({in: `'${char}'`, key: `'${k_char}'`, shift: k_shift, calc: sub_steps[0].calc, out: sub_steps[0].out});
-                    textIndex++;
-                } else {
-                     result += char;
-                     steps.push({in: `'${char}'`, key: 'N/A', shift: 'N/A', calc: 'No es letra', out: `'${char}'`});
-                }
-            }
-            return { result, steps };
-        },
-        rsa_cipher(text, N, key, mode) {
-            const steps = [];
-            if (mode === 'enc') {
-                const result = [];
-                for (let i = 0; i < text.length; i++) {
-                    const m = text.charCodeAt(i);
-                    if (m >= N) throw new Error(`El valor del caracter '${text[i]}' (ASCII=${m}) es >= que N=${N}. Use p y q m·s grandes.`);
-                    const c = this.power(m, key, N);
-                    result.push(c);
-                    steps.push({ in: `'${text[i]}' (m=${m})`, calc: `c = ${m}^${key} mod ${N}`, res: `c = ${c}` });
-                }
-                return { result: result.join(','), steps };
-            } else {
-                let result = '';
-                const cipher_nums = text.split(',').map(n => parseInt(n.trim(), 10));
-                for (const c of cipher_nums) {
-                    if (isNaN(c)) throw new Error(`Entrada '${text}' contiene valores no numÈricos.`);
-                    const m = this.power(c, key, N);
-                    result += String.fromCharCode(m);
-                    steps.push({ in: `c=${c}`, calc: `m = ${c}^${key} mod ${N}`, res: `m = ${m} ('${String.fromCharCode(m)}')` });
-                }
-                return { result, steps };
-            }
-        },
-        euclides_algorithm(a, b) {
-            const steps = []; let A = Math.abs(a), B = Math.abs(b);
-            if (B > A) [A, B] = [B, A];
-            while (B !== 0) {
-                const q = Math.floor(A / B), r = A % B;
-                steps.push({ a: A, b: B, q, r }); [A, B] = [B, r];
-            }
-            const [g, x, y] = this.egcd(a, b);
-            return { result: `MCD = ${g} | BÈzout: ${a}(${x}) + ${b}(${y}) = ${g}`, steps };
-        },
-        chinese_remainder_theorem(congruences) {
-            const steps = []; const moduli = congruences.map(c => c.n);
-            for (let i = 0; i < moduli.length; i++) {
-                if (moduli[i] <= 1) throw new Error(`El mÛdulo n_${i+1}=${moduli[i]} debe ser > 1.`);
-                for (let j = i + 1; j < moduli.length; j++) {
-                    const g = this.mcd(moduli[i], moduli[j]);
-                    if (g !== 1) throw new Error(`MÛdulos no son coprimos: mcd(${moduli[i]}, ${moduli[j]}) = ${g}.`);
-                }
-            }
-            const N = moduli.reduce((acc, val) => acc * val, 1);
-            steps.push({ step: 'Calcular N', calc: moduli.join(' * '), res: `N = ${N}` });
-            let total_sum = 0; const terms = [];
-            for (let i = 0; i < congruences.length; i++) {
-                const { a: a_i, n: n_i } = congruences[i];
-                const N_i = N / n_i, y_i = this.modinv(N_i, n_i), term = a_i * N_i * y_i;
-                terms.push(term); total_sum += term;
-                steps.push({ step: `Congruencia ${i+1}`, calc: `a?=${a_i}, n?=${n_i}`, res: '---' });
-                steps.push({ step: '', calc: `N? = N/n? = ${N}/${n_i}`, res: `N? = ${N_i}` });
-                steps.push({ step: '', calc: `y? = (N?)?π mod n?`, res: `y? = ${y_i}` });
-                steps.push({ step: '', calc: `TÈrmino = a?*N?*y?`, res: `${term}` });
-            }
-            steps.push({ step: 'Sumar tÈrminos', calc: `X = (${terms.join(' + ')}) mod ${N}`, res: `X = ${total_sum % N}` });
-            return { result: `x = ${total_sum % N} (mod ${N})`, steps };
-        },
-        updateTable(tableId, headers, data, mapping) {
-            const table = document.getElementById(tableId);
-            table.innerHTML = `<thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody></tbody>`;
-            const tbody = table.querySelector('tbody');
-            data.forEach(rowData => {
-                 if (rowData.header) {
-                    tbody.innerHTML += `<tr><td colspan="${headers.length}" style="background-color: var(--bg-color); font-weight: bold;">${rowData.header}</td></tr>`;
-                 } else {
-                    const row = document.createElement('tr');
-                    mapping.forEach(key => {
-                        const cell = document.createElement('td');
-                        cell.textContent = rowData[key];
-                        row.appendChild(cell);
-                    });
-                    tbody.appendChild(row);
-                 }
-            });
-        },
-        init() {
-            this.setupNavigation(); this.setupCesar(); this.setupAfin();
-            this.setupVigenere(); this.setupEuclides(); this.setupTCR();
-            this.setupOTP(); this.setupRSA();
-        },
-        setupNavigation() {
-            const navButtons = document.querySelectorAll('.nav-button');
-            const toolContainers = document.querySelectorAll('.tool-container');
-            navButtons.forEach(button => {
-                button.addEventListener('click', () => {
-                    const tool = button.getAttribute('data-tool');
-                    navButtons.forEach(btn => btn.classList.remove('active'));
-                    button.classList.add('active');
-                    toolContainers.forEach(container => {
-                        container.classList.remove('active');
-                        if (container.id === tool) container.classList.add('active');
-                    });
-                });
-            });
-        },
-        setupCesar() {
-            document.getElementById('cesarExecute').addEventListener('click', () => {
-                try {
-                    const text = document.getElementById('cesarText').value;
-                    const k = parseInt(document.getElementById('cesarK').value, 10);
-                    if (isNaN(k)) throw new Error("El desplazamiento 'k' debe ser un n˙mero.");
-                    const { result, steps } = this.caesar_cipher(text, k, document.querySelector('input[name="cesarMode"]:checked').value === 'dec');
-                    document.getElementById('cesarResultText').textContent = result;
-                    this.updateTable('cesarStepsTable', ['Entrada', 'Õndice P', 'C·lculo', 'Õndice C', 'Salida'], steps, ['in', 'p_idx', 'calc', 'c_idx', 'out']);
-                } catch (e) { modal.show('Error en Cifrado CÈsar', e.message); }
-            });
-        },
-        setupAfin() {
-            const selectA = document.getElementById('afinA');
-            [1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25].forEach(val => {
-                const option = document.createElement('option');
-                option.value = val; option.textContent = val; selectA.appendChild(option);
-            });
-            selectA.value = 5;
-            document.getElementById('afinExecute').addEventListener('click', () => {
-                try {
-                    const text = document.getElementById('afinText').value;
-                    const a = parseInt(document.getElementById('afinA').value, 10);
-                    const b = parseInt(document.getElementById('afinB').value, 10);
-                    if (isNaN(b)) throw new Error("El valor 'b' debe ser un n˙mero.");
-                    const decrypt = document.querySelector('input[name="afinMode"]:checked').value === 'dec';
-                    const { result, steps } = this.affine_cipher(text, a, b, decrypt);
-                    document.getElementById('afinResultText').textContent = result;
-                    const headers = decrypt ? ['Entrada', 'Õndice C', 'C·lculo', 'Õndice P', 'Salida'] : ['Entrada', 'Õndice P', 'C·lculo', 'Õndice C', 'Salida'];
-                    this.updateTable('afinStepsTable', headers, steps, ['in', 'p_idx', 'calc', 'c_idx', 'out']);
-                } catch (e) { modal.show('Error en Cifrado AfÌn', e.message); }
-            });
-        },
-        setupVigenere() {
-            document.getElementById('vigenereExecute').addEventListener('click', () => {
-                try {
-                    const { result, steps } = this.vigenere_cipher(document.getElementById('vigenereText').value, document.getElementById('vigenereKey').value, document.querySelector('input[name="vigenereMode"]:checked').value === 'dec');
-                    document.getElementById('vigenereResultText').textContent = result;
-                    this.updateTable('vigenereStepsTable', ['Entrada', 'Clave', 'Shift', 'C·lculo', 'Salida'], steps, ['in', 'key', 'shift', 'calc', 'out']);
-                } catch (e) { modal.show('Error en Cifrado VigenËre', e.message); }
-            });
-        },
-        setupOTP() {
-            document.getElementById('otpGenerateKey').addEventListener('click', () => {
-                const text = document.getElementById('otpText').value;
-                const textOnlyLetters = text.toUpperCase().replace(/[^A-Z]/g, '');
-                let randomKey = '';
-                for (let i = 0; i < textOnlyLetters.length; i++) {
-                    randomKey += this.ALPHABET[Math.floor(Math.random() * 26)];
-                }
-                document.getElementById('otpKey').value = randomKey;
-            });
-            document.getElementById('otpExecute').addEventListener('click', () => {
-                try {
-                    const { result, steps } = this.one_time_pad_cipher(document.getElementById('otpText').value, document.getElementById('otpKey').value, document.querySelector('input[name="otpMode"]:checked').value === 'dec');
-                    document.getElementById('otpResultText').textContent = result;
-                    this.updateTable('otpStepsTable', ['Entrada', 'Clave', 'Shift', 'C·lculo', 'Salida'], steps, ['in', 'key', 'shift', 'calc', 'out']);
-                } catch (e) { modal.show('Error en One-Time Pad', e.message); }
-            });
-        },
+        mcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a; },
+        egcd(a, b) { if (a === 0) return [b, 0, 1]; const [g, y, x] = this.egcd(b % a, a); return [g, x - Math.floor(b / a) * y, y]; },
+        modinv(a, m) { const [g, x, y] = this.egcd(a, m); if (g !== 1) throw new Error(`La inversa modular de ${a} mod ${m} no existe (MCD=${g} ‚â† 1).`); return (x % m + m) % m; },
+        power(base, exp, mod) { let res = 1n; base = BigInt(base); exp = BigInt(exp); mod = BigInt(mod); base %= mod; while (exp > 0) { if (exp % 2n === 1n) res = (res * base) % mod; exp = exp >> 1n; base = (base * base) % mod; } return Number(res); },
+        isPrime(num) { if (num <= 1) return false; if (num <= 3) return true; if (num % 2 === 0 || num % 3 === 0) return false; for (let i = 5; i * i <= num; i = i + 6) { if (num % i === 0 || num % (i + 2) === 0) return false; } return true; },
+        caesar_cipher(text, k, decrypt = false) { const op = decrypt ? -1 : 1, effectiveK = op * k; let result = ''; const steps = []; for (const char of text) { if (this.ALPHABET.includes(char.toUpperCase())) { const charCode = char.charCodeAt(0), base = charCode >= 97 ? 97 : 65; const p_idx = charCode - base; const c_idx = (p_idx + effectiveK + 26) % 26; const newChar = String.fromCharCode(base + c_idx); result += newChar; steps.push({ in: `'${char}'`, p_idx, calc: `(${p_idx} ${decrypt ? '-' : '+'} ${k}) mod 26`, c_idx, out: `'${newChar}'` }); } else { result += char; steps.push({ in: `'${char}'`, p_idx: 'N/A', calc: 'No es letra', c_idx: 'N/A', out: `'${char}'` }); } } return { result, steps }; },
+        affine_cipher(text, a, b, decrypt = false) { let result = ''; const steps = []; if (decrypt) { const a_inv = this.modinv(a, 26); steps.push({ header: `Paso 1: Inversa de a=${a} mod 26 => a‚Åª¬π=${a_inv}` }); for (const char of text) { if (this.ALPHABET.includes(char.toUpperCase())) { const p_idx = this.ALPHABET.indexOf(char.toUpperCase()); const c_idx = (a_inv * (p_idx - b) + 520) % 26; const newChar = this.ALPHABET[c_idx]; result += char === char.toLowerCase() ? newChar.toLowerCase() : newChar; steps.push({ in: `'${char}'`, p_idx, calc: `${a_inv}*(${p_idx}-${b}) mod 26`, c_idx, out: `'${newChar}'` }); } else { result += char; steps.push({ in: `'${char}'`, p_idx: 'N/A', calc: 'No es letra', c_idx: 'N/A', out: `'${char}'` }); } } } else { for (const char of text) { if (this.ALPHABET.includes(char.toUpperCase())) { const p_idx = this.ALPHABET.indexOf(char.toUpperCase()); const c_idx = (a * p_idx + b) % 26; const newChar = this.ALPHABET[c_idx]; result += char === char.toLowerCase() ? newChar.toLowerCase() : newChar; steps.push({ in: `'${char}'`, p_idx, calc: `(${a}*${p_idx}+${b}) mod 26`, c_idx, out: `'${newChar}'` }); } else { result += char; steps.push({ in: `'${char}'`, p_idx: 'N/A', calc: 'No es letra', c_idx: 'N/A', out: `'${char}'` }); } } } return { result, steps }; },
+        vigenere_cipher(text, key, decrypt = false) { const cleanKey = key.toUpperCase().replace(/[^A-Z]/g, ''); if (!cleanKey) throw new Error("La clave debe contener letras."); let result = '', steps = [], keyIndex = 0; for (const char of text) { if (this.ALPHABET.includes(char.toUpperCase())) { const k_char = cleanKey[keyIndex % cleanKey.length]; const k_shift = this.ALPHABET.indexOf(k_char); const { result: sub_res, steps: sub_steps } = this.caesar_cipher(char, k_shift, decrypt); result += sub_res; steps.push({in: `'${char}'`, key: `'${k_char}'`, shift: k_shift, calc: sub_steps[0].calc, out: sub_steps[0].out}); keyIndex++; } else { result += char; steps.push({in: `'${char}'`, key: 'N/A', shift: 'N/A', calc: 'No es letra', out: `'${char}'`}); } } return { result, steps }; },
+        one_time_pad_cipher(text, key, decrypt = false) { const cleanKey = key.toUpperCase().replace(/[^A-Z]/g, ''); const cleanText = text.toUpperCase().replace(/[^A-Z]/g, ''); if (cleanKey.length !== cleanText.length) throw new Error("La longitud del texto (solo letras) y la clave deben ser iguales."); let result = '', steps = [], textIndex = 0; for (let i = 0; i < text.length; i++) { const char = text[i]; if (this.ALPHABET.includes(char.toUpperCase())) { const k_char = cleanKey[textIndex]; const k_shift = this.ALPHABET.indexOf(k_char); const { result: sub_res, steps: sub_steps } = this.caesar_cipher(char, k_shift, decrypt); result += sub_res; steps.push({in: `'${char}'`, key: `'${k_char}'`, shift: k_shift, calc: sub_steps[0].calc, out: sub_steps[0].out}); textIndex++; } else { result += char; steps.push({in: `'${char}'`, key: 'N/A', shift: 'N/A', calc: 'No es letra', out: `'${char}'`}); } } return { result, steps }; },
+        rsa_cipher(text, N, key, mode) { const steps = []; if (mode === 'enc') { const result = []; for (let i = 0; i < text.length; i++) { const m = text.charCodeAt(i); if (m >= N) throw new Error(`El valor del caracter '${text[i]}' (ASCII=${m}) es >= que N=${N}. Use p y q m√°s grandes.`); const c = this.power(m, key, N); result.push(c); steps.push({ in: `'${text[i]}' (m=${m})`, calc: `c = ${m}^${key} mod ${N}`, res: `c = ${c}` }); } return { result: result.join(','), steps }; } else { let result = ''; const cipher_nums = text.split(',').map(n => parseInt(n.trim(), 10)); for (const c of cipher_nums) { if (isNaN(c)) throw new Error(`Entrada '${text}' contiene valores no num√©ricos.`); const m = this.power(c, key, N); result += String.fromCharCode(m); steps.push({ in: `c=${c}`, calc: `m = ${c}^${key} mod ${N}`, res: `m = ${m} ('${String.fromCharCode(m)}')` }); } return { result, steps }; } },
+        euclides_algorithm(a, b) { const steps = []; let A = Math.abs(a), B = Math.abs(b); if (B > A) [A, B] = [B, A]; while (B !== 0) { const q = Math.floor(A / B), r = A % B; steps.push({ a: A, b: B, q, r }); [A, B] = [B, r]; } const [g, x, y] = this.egcd(a, b); return { result: `MCD = ${g} | B√©zout: ${a}(${x}) + ${b}(${y}) = ${g}`, steps }; },
+        chinese_remainder_theorem(congruences) { const steps = []; const moduli = congruences.map(c => c.n); for (let i = 0; i < moduli.length; i++) { if (moduli[i] <= 1) throw new Error(`El m√≥dulo n_${i+1}=${moduli[i]} debe ser > 1.`); for (let j = i + 1; j < moduli.length; j++) { const g = this.mcd(moduli[i], moduli[j]); if (g !== 1) throw new Error(`M√≥dulos no son coprimos: mcd(${moduli[i]}, ${moduli[j]}) = ${g}.`); } } const N = moduli.reduce((acc, val) => acc * val, 1); steps.push({ step: 'Calcular N', calc: moduli.join(' * '), res: `N = ${N}` }); let total_sum = 0; const terms = []; for (let i = 0; i < congruences.length; i++) { const { a: a_i, n: n_i } = congruences[i]; const N_i = N / n_i, y_i = this.modinv(N_i, n_i), term = a_i * N_i * y_i; terms.push(term); total_sum += term; steps.push({ step: `Congruencia ${i+1}`, calc: `a·µ¢=${a_i}, n·µ¢=${n_i}`, res: '---' }); steps.push({ step: '', calc: `N·µ¢ = N/n·µ¢ = ${N}/${n_i}`, res: `N·µ¢ = ${N_i}` }); steps.push({ step: '', calc: `y·µ¢ = (N·µ¢)‚Åª¬π mod n·µ¢`, res: `y·µ¢ = ${y_i}` }); steps.push({ step: '', calc: `T√©rmino = a·µ¢*N·µ¢*y·µ¢`, res: `${term}` }); } steps.push({ step: 'Sumar t√©rminos', calc: `X = (${terms.join(' + ')}) mod ${N}`, res: `X = ${total_sum % N}` }); return { result: `x ‚â° ${total_sum % N} (mod ${N})`, steps }; },
+        updateTable(tableId, headers, data, mapping) { const table = document.getElementById(tableId); table.innerHTML = `<thead><tr>${headers.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody></tbody>`; const tbody = table.querySelector('tbody'); data.forEach(rowData => { if (rowData.header) { tbody.innerHTML += `<tr><td colspan="${headers.length}" style="background-color: var(--bg-color); font-weight: bold;">${rowData.header}</td></tr>`; } else { const row = document.createElement('tr'); mapping.forEach(key => { const cell = document.createElement('td'); cell.textContent = rowData[key]; row.appendChild(cell); }); tbody.appendChild(row); } }); },
+        init() { this.setupNavigation(); this.setupCesar(); this.setupAfin(); this.setupVigenere(); this.setupEuclides(); this.setupTCR(); this.setupOTP(); this.setupRSA(); },
+        setupNavigation() { const navButtons = document.querySelectorAll('.nav-button'); const toolContainers = document.querySelectorAll('.tool-container'); navButtons.forEach(button => { button.addEventListener('click', () => { const tool = button.getAttribute('data-tool'); navButtons.forEach(btn => btn.classList.remove('active')); button.classList.add('active'); toolContainers.forEach(container => { container.classList.remove('active'); if (container.id === tool) container.classList.add('active'); }); }); }); },
+        setupCesar() { document.getElementById('cesarExecute').addEventListener('click', () => { try { const text = document.getElementById('cesarText').value; const k = parseInt(document.getElementById('cesarK').value, 10); if (isNaN(k)) throw new Error("El desplazamiento 'k' debe ser un n√∫mero."); const { result, steps } = this.caesar_cipher(text, k, document.querySelector('input[name="cesarMode"]:checked').value === 'dec'); document.getElementById('cesarResultText').textContent = result; this.updateTable('cesarStepsTable', ['Entrada', '√çndice P', 'C√°lculo', '√çndice C', 'Salida'], steps, ['in', 'p_idx', 'calc', 'c_idx', 'out']); } catch (e) { modal.show('Error en Cifrado C√©sar', e.message); } }); },
+        setupAfin() { const selectA = document.getElementById('afinA'); [1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25].forEach(val => { const option = document.createElement('option'); option.value = val; option.textContent = val; selectA.appendChild(option); }); selectA.value = 5; document.getElementById('afinExecute').addEventListener('click', () => { try { const text = document.getElementById('afinText').value; const a = parseInt(document.getElementById('afinA').value, 10); const b = parseInt(document.getElementById('afinB').value, 10); if (isNaN(b)) throw new Error("El valor 'b' debe ser un n√∫mero."); const decrypt = document.querySelector('input[name="afinMode"]:checked').value === 'dec'; const { result, steps } = this.affine_cipher(text, a, b, decrypt); document.getElementById('afinResultText').textContent = result; const headers = decrypt ? ['Entrada', '√çndice C', 'C√°lculo', '√çndice P', 'Salida'] : ['Entrada', '√çndice P', 'C√°lculo', '√çndice C', 'Salida']; this.updateTable('afinStepsTable', headers, steps, ['in', 'p_idx', 'calc', 'c_idx', 'out']); } catch (e) { modal.show('Error en Cifrado Af√≠n', e.message); } }); },
+        setupVigenere() { document.getElementById('vigenereExecute').addEventListener('click', () => { try { const { result, steps } = this.vigenere_cipher(document.getElementById('vigenereText').value, document.getElementById('vigenereKey').value, document.querySelector('input[name="vigenereMode"]:checked').value === 'dec'); document.getElementById('vigenereResultText').textContent = result; this.updateTable('vigenereStepsTable', ['Entrada', 'Clave', 'Shift', 'C√°lculo', 'Salida'], steps, ['in', 'key', 'shift', 'calc', 'out']); } catch (e) { modal.show('Error en Cifrado Vigen√®re', e.message); } }); },
+        setupOTP() { document.getElementById('otpGenerateKey').addEventListener('click', () => { const text = document.getElementById('otpText').value; const textOnlyLetters = text.toUpperCase().replace(/[^A-Z]/g, ''); let randomKey = ''; for (let i = 0; i < textOnlyLetters.length; i++) { randomKey += this.ALPHABET[Math.floor(Math.random() * 26)]; } document.getElementById('otpKey').value = randomKey; }); document.getElementById('otpExecute').addEventListener('click', () => { try { const { result, steps } = this.one_time_pad_cipher(document.getElementById('otpText').value, document.getElementById('otpKey').value, document.querySelector('input[name="otpMode"]:checked').value === 'dec'); document.getElementById('otpResultText').textContent = result; this.updateTable('otpStepsTable', ['Entrada', 'Clave', 'Shift', 'C√°lculo', 'Salida'], steps, ['in', 'key', 'shift', 'calc', 'out']); } catch (e) { modal.show('Error en One-Time Pad', e.message); } }); },
         setupRSA() {
-            const p_input = document.getElementById('rsaP');
-            const q_input = document.getElementById('rsaQ');
-            const e_input = document.getElementById('rsaE');
-            const p_val = document.getElementById('rsaP-validation');
-            const q_val = document.getElementById('rsaQ-validation');
-            const e_val = document.getElementById('rsaE-validation');
-            const gen_button = document.getElementById('rsaGenerateKeys');
-            const exec_button = document.getElementById('rsaExecute');
-
+            const p_input = document.getElementById('rsaP'); const q_input = document.getElementById('rsaQ'); const e_input = document.getElementById('rsaE');
+            const p_val = document.getElementById('rsaP-validation'); const q_val = document.getElementById('rsaQ-validation'); const e_val = document.getElementById('rsaE-validation');
+            const gen_button = document.getElementById('rsaGenerateKeys'); const exec_button = document.getElementById('rsaExecute');
             const validate_rsa_inputs = () => {
                 let p_ok = false, q_ok = false, e_ok = false;
-                const p = parseInt(p_input.value, 10);
-                const q = parseInt(q_input.value, 10);
-                const e = parseInt(e_input.value, 10);
-
-                // Validar P
-                if (!isNaN(p)) {
-                    if (!this.isPrime(p)) { p_val.textContent = "p debe ser un n˙mero primo."; p_val.style.display = 'block'; p_input.classList.add('invalid'); }
-                    else { p_val.style.display = 'none'; p_input.classList.remove('invalid'); p_ok = true; }
-                }
-                // Validar Q
-                if (!isNaN(q)) {
-                    if (!this.isPrime(q)) { q_val.textContent = "q debe ser un n˙mero primo."; q_val.style.display = 'block'; q_input.classList.add('invalid'); }
-                    else if (p === q) { q_val.textContent = "p y q no pueden ser iguales."; q_val.style.display = 'block'; q_input.classList.add('invalid'); }
-                    else { q_val.style.display = 'none'; q_input.classList.remove('invalid'); q_ok = true; }
-                }
-                // Validar E (solo si P y Q son v·lidos)
-                if (p_ok && q_ok) {
-                    const phiN = (p - 1) * (q - 1);
-                    if (!isNaN(e)) {
-                        if (this.mcd(e, phiN) !== 1) { e_val.textContent = `e debe ser coprimo con f(N) = ${phiN}.`; e_val.style.display = 'block'; e_input.classList.add('invalid');}
-                        else if (e <= 1 || e >= phiN) { e_val.textContent = `e debe estar entre 1 y ${phiN}.`; e_val.style.display = 'block'; e_input.classList.add('invalid');}
-                        else { e_val.style.display = 'none'; e_input.classList.remove('invalid'); e_ok = true; }
-                    }
-                } else {
-                    e_val.textContent = 'p y q deben ser primos v·lidos primero.'; e_val.style.display = 'block';
-                }
+                const p = parseInt(p_input.value, 10); const q = parseInt(q_input.value, 10); const e = parseInt(e_input.value, 10);
+                if (!isNaN(p)) { if (!this.isPrime(p)) { p_val.textContent = "p debe ser un n√∫mero primo."; p_val.style.display = 'block'; p_input.classList.add('invalid'); } else { p_val.style.display = 'none'; p_input.classList.remove('invalid'); p_ok = true; } }
+                if (!isNaN(q)) { if (!this.isPrime(q)) { q_val.textContent = "q debe ser un n√∫mero primo."; q_val.style.display = 'block'; q_input.classList.add('invalid'); } else if (p === q) { q_val.textContent = "p y q no pueden ser iguales."; q_val.style.display = 'block'; q_input.classList.add('invalid'); } else { q_val.style.display = 'none'; q_input.classList.remove('invalid'); q_ok = true; } }
+                if (p_ok && q_ok) { const phiN = (p - 1) * (q - 1); if (!isNaN(e)) { if (this.mcd(e, phiN) !== 1) { e_val.textContent = `e debe ser coprimo con œÜ(N) = ${phiN}.`; e_val.style.display = 'block'; e_input.classList.add('invalid');} else if (e <= 1 || e >= phiN) { e_val.textContent = `e debe estar entre 1 y ${phiN}.`; e_val.style.display = 'block'; e_input.classList.add('invalid');} else { e_val.style.display = 'none'; e_input.classList.remove('invalid'); e_ok = true; } } } else { e_val.textContent = 'p y q deben ser primos v√°lidos primero.'; e_val.style.display = 'block'; }
                 gen_button.disabled = !(p_ok && q_ok && e_ok);
             };
-            
             [p_input, q_input, e_input].forEach(el => el.addEventListener('input', validate_rsa_inputs));
-
-            const generateKeys = () => {
-                 try {
-                    const p = parseInt(p_input.value, 10);
-                    const q = parseInt(q_input.value, 10);
-                    const e = parseInt(e_input.value, 10);
-                    const N = p * q;
-                    const phiN = (p - 1) * (q - 1);
-                    const d = this.modinv(e, phiN);
-                    document.getElementById('rsaN').value = N;
-                    document.getElementById('rsaPhiN').value = phiN;
-                    document.getElementById('rsaPublicKey').value = `(${N}, ${e})`;
-                    document.getElementById('rsaPrivateKey').value = d;
-                    exec_button.disabled = false;
-                 } catch(e) { modal.show('Error en GeneraciÛn de Claves', e.message); exec_button.disabled = true; }
-            };
+            const generateKeys = () => { try { const p = parseInt(p_input.value, 10); const q = parseInt(q_input.value, 10); const e = parseInt(e_input.value, 10); const N = p * q; const phiN = (p - 1) * (q - 1); const d = this.modinv(e, phiN); document.getElementById('rsaN').value = N; document.getElementById('rsaPhiN').value = phiN; document.getElementById('rsaPublicKey').value = `(${N}, ${e})`; document.getElementById('rsaPrivateKey').value = d; exec_button.disabled = false; } catch(e) { modal.show('Error en Generaci√≥n de Claves', e.message); exec_button.disabled = true; } };
             gen_button.addEventListener('click', generateKeys);
-            
-            exec_button.addEventListener('click', () => {
-                try {
-                    const N = parseInt(document.getElementById('rsaN').value, 10);
-                    const mode = document.querySelector('input[name="rsaMode"]:checked').value;
-                    const key = (mode === 'enc') 
-                        ? parseInt(e_input.value, 10)
-                        : parseInt(document.getElementById('rsaPrivateKey').value, 10);
-                    if (isNaN(N) || isNaN(key)) throw new Error("Genere o verifique las claves primero.");
-                    const { result, steps } = this.rsa_cipher(document.getElementById('rsaText').value, N, key, mode);
-                    document.getElementById('rsaResultText').textContent = result;
-                    const headers = (mode === 'enc') ? ['Entrada (m)', 'C·lculo (c = m^e mod N)', 'Resultado (c)'] : ['Entrada (c)', 'C·lculo (m = c^d mod N)', 'Resultado (m)'];
-                    this.updateTable('rsaStepsTable', headers, steps, ['in', 'calc', 'res']);
-                } catch(e) { modal.show('Error en RSA', e.message); }
-            });
-            validate_rsa_inputs();
-            generateKeys();
+            exec_button.addEventListener('click', () => { try { const N = parseInt(document.getElementById('rsaN').value, 10); const mode = document.querySelector('input[name="rsaMode"]:checked').value; const key = (mode === 'enc') ? parseInt(e_input.value, 10) : parseInt(document.getElementById('rsaPrivateKey').value, 10); if (isNaN(N) || isNaN(key)) throw new Error("Genere o verifique las claves primero."); const { result, steps } = this.rsa_cipher(document.getElementById('rsaText').value, N, key, mode); document.getElementById('rsaResultText').textContent = result; const headers = (mode === 'enc') ? ['Entrada (m)', 'C√°lculo (c = m^e mod N)', 'Resultado (c)'] : ['Entrada (c)', 'C√°lculo (m = c^d mod N)', 'Resultado (m)']; this.updateTable('rsaStepsTable', headers, steps, ['in', 'calc', 'res']); } catch(e) { modal.show('Error en RSA', e.message); } });
+            validate_rsa_inputs(); generateKeys();
         },
-        setupEuclides() {
-             document.getElementById('euclidesExecute').addEventListener('click', () => {
-                try {
-                    const a = parseInt(document.getElementById('euclidesA').value, 10);
-                    const b = parseInt(document.getElementById('euclidesB').value, 10);
-                    if (isNaN(a) || isNaN(b)) throw new Error("a y b deben ser enteros.");
-                    if (a === 0 && b === 0) throw new Error("MCD(0,0) no est· definido.");
-                    const { result, steps } = this.euclides_algorithm(a, b);
-                    document.getElementById('euclidesResultText').textContent = result;
-                    this.updateTable('euclidesStepsTable', ['a', 'b', 'Cociente (q)', 'Resto (r)'], steps, ['a', 'b', 'q', 'r']);
-                } catch (e) { modal.show('Error en Euclides', e.message); }
-            });
-        },
-        setupTCR() {
-            const container = document.getElementById('tcrCongruences');
-            const addRow = (aVal = '', nVal = '') => {
-                const div = document.createElement('div');
-                div.style.marginBottom = '5px';
-                div.innerHTML = `x = <input type="number" class="tcrA" value="${aVal}" style="width: 60px;"> (mod <input type="number" class="tcrN" value="${nVal}" style="width: 60px;">) <button class="tcrRemoveRow" style="background-color: ${getComputedStyle(document.documentElement).getPropertyValue('--error-color')}; color: white; border: none; border-radius: 50%; cursor: pointer; width:20px; height:20px; line-height:20px; text-align:center; padding:0;">-</button>`;
-                container.appendChild(div);
-                div.querySelector('.tcrRemoveRow').addEventListener('click', () => { if (container.children.length > 2) div.remove(); });
-            };
-            document.getElementById('tcrAddRow').addEventListener('click', () => addRow());
-            addRow('2', '3'); addRow('3', '5');
-            document.getElementById('tcrExecute').addEventListener('click', () => {
-                try {
-                    const congruences = [];
-                    container.querySelectorAll('div').forEach(row => {
-                         const a = parseInt(row.querySelector('.tcrA').value, 10), n = parseInt(row.querySelector('.tcrN').value, 10);
-                         if (!isNaN(a) && !isNaN(n)) congruences.push({ a, n });
-                    });
-                    if (congruences.length === 0) throw new Error("AÒada al menos una congruencia v·lida.");
-                    const { result, steps } = this.chinese_remainder_theorem(congruences);
-                    document.getElementById('tcrResultText').textContent = result;
-                    this.updateTable('tcrStepsTable', ['Paso', 'C·lculo', 'Resultado'], steps, ['step', 'calc', 'res']);
-                } catch (e) { modal.show('Error en T. Chino del Residuo', e.message); }
-            });
-        }
+        setupEuclides() { document.getElementById('euclidesExecute').addEventListener('click', () => { try { const a = parseInt(document.getElementById('euclidesA').value, 10); const b = parseInt(document.getElementById('euclidesB').value, 10); if (isNaN(a) || isNaN(b)) throw new Error("a y b deben ser enteros."); if (a === 0 && b === 0) throw new Error("MCD(0,0) no est√° definido."); const { result, steps } = this.euclides_algorithm(a, b); document.getElementById('euclidesResultText').textContent = result; this.updateTable('euclidesStepsTable', ['a', 'b', 'Cociente (q)', 'Resto (r)'], steps, ['a', 'b', 'q', 'r']); } catch (e) { modal.show('Error en Euclides', e.message); } }); },
+        setupTCR() { const container = document.getElementById('tcrCongruences'); const addRow = (aVal = '', nVal = '') => { const div = document.createElement('div'); div.style.marginBottom = '5px'; div.innerHTML = `x ‚â° <input type="number" class="tcrA" value="${aVal}" style="width: 60px;"> (mod <input type="number" class="tcrN" value="${nVal}" style="width: 60px;">) <button class="tcrRemoveRow" style="background-color: ${getComputedStyle(document.documentElement).getPropertyValue('--error-color')}; color: white; border: none; border-radius: 50%; cursor: pointer; width:20px; height:20px; line-height:20px; text-align:center; padding:0;">-</button>`; container.appendChild(div); div.querySelector('.tcrRemoveRow').addEventListener('click', () => { if (container.children.length > 2) div.remove(); }); }; document.getElementById('tcrAddRow').addEventListener('click', () => addRow()); addRow('2', '3'); addRow('3', '5'); document.getElementById('tcrExecute').addEventListener('click', () => { try { const congruences = []; container.querySelectorAll('div').forEach(row => { const a = parseInt(row.querySelector('.tcrA').value, 10), n = parseInt(row.querySelector('.tcrN').value, 10); if (!isNaN(a) && !isNaN(n)) congruences.push({ a, n }); }); if (congruences.length === 0) throw new Error("A√±ada al menos una congruencia v√°lida."); const { result, steps } = this.chinese_remainder_theorem(congruences); document.getElementById('tcrResultText').textContent = result; this.updateTable('tcrStepsTable', ['Paso', 'C√°lculo', 'Resultado'], steps, ['step', 'calc', 'res']); } catch (e) { modal.show('Error en T. Chino del Residuo', e.message); } }); }
     };
     app.init();
 });
@@ -830,4 +477,5 @@ document.addEventListener('DOMContentLoaded', () => {
 
 </body>
 </html>
+
 
