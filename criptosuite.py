@@ -1,590 +1,716 @@
-# -*- coding: utf-8 -*-
-"""
-CriptoSuite Profesional - Versión de Escritorio en Python v2.1 (Final)
-
-Descripción:
-Esta es la versión final y completamente funcional. Se ha corregido el error
-de carga de imágenes de manera definitiva, reemplazando el logo por un
-placeholder compatible para garantizar la ejecución en todos los sistemas.
-Toda la lógica de los algoritmos y la interfaz avanzada permanecen intactas.
-
-Dependencias:
-- sv-ttk: Para la apariencia visual moderna. Instalar con: pip install sv-ttk
-
-Para crear un ejecutable (.exe):
-1. Instala PyInstaller: pip install pyinstaller
-2. Ejecuta en la terminal:
-   pyinstaller --name CriptoSuite --onefile --windowed --noconsole criptosuite.py
-"""
 import tkinter as tk
-from tkinter import ttk, font
-import string
-import random
+from tkinter import ttk, font, messagebox
 import math
+import random
 
-# --- Manejo de Dependencia Opcional ---
-try:
-    import sv_ttk
-    USE_SV_TTK = True
-except ImportError:
-    USE_SV_TTK = False
-    print("Advertencia: El paquete 'sv-ttk' no está instalado. La aplicación usará el tema por defecto.")
-    print("Para una mejor apariencia visual, instálalo con: pip install sv-ttk")
+# =================================================================================================
+# SECCIÓN 1: LÓGICA CRIPTOGRÁFICA
+# Contiene toda la matemática pura, portada directamente de la lógica de JavaScript.
+# =================================================================================================
+class CriptoMath:
+    ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
 
-# ============================================
-# NÚCLEO MATEMÁTICO (Lógica de Criptografía)
-# ============================================
-ALPHABET = string.ascii_uppercase
+    @staticmethod
+    def mcd(a, b):
+        return math.gcd(a, b)
 
-def mcd(a, b):
-    a, b = abs(a), abs(b)
-    while b:
-        a, b = b, a % b
-    return a
+    @staticmethod
+    def egcd(a, b):
+        if a == 0:
+            return (b, 0, 1)
+        g, y, x = CriptoMath.egcd(b % a, a)
+        return (g, x - (b // a) * y, y)
 
-def egcd(a, b):
-    if a == 0:
-        return (b, 0, 1)
-    g, y, x = egcd(b % a, a)
-    return (g, x - (b // a) * y, y)
+    @staticmethod
+    def modinv(a, m):
+        if m <= 1:
+            raise ValueError("El módulo debe ser mayor que 1.")
+        g, x, y = CriptoMath.egcd(a, m)
+        if g != 1:
+            raise ValueError(f"La inversa de {a} mod {m} no existe (MCD={g} ≠ 1).")
+        return (x % m + m) % m
 
-def modinv(a, m):
-    g, x, y = egcd(a, m)
-    if g != 1:
-        raise ValueError(f"La inversa modular de {a} mod {m} no existe (MCD={g} ≠ 1).")
-    return (x % m + m) % m
+    @staticmethod
+    def power(base, exp, mod):
+        return pow(base, exp, mod)
 
-def power(base, exp, mod):
-    return pow(base, exp, mod)
+    @staticmethod
+    def is_prime(num):
+        if num < 2: return False
+        if num == 2 or num == 3: return True
+        if num % 2 == 0 or num % 3 == 0: return False
+        i = 5
+        while i * i <= num:
+            if num % i == 0 or num % (i + 2) == 0:
+                return False
+            i += 6
+        return True
 
-def is_prime(num):
-    if not isinstance(num, int) or num <= 1: return False
-    if num <= 3: return True
-    if num % 2 == 0 or num % 3 == 0: return False
-    i = 5
-    while i * i <= num:
-        if num % i == 0 or num % (i + 2) == 0:
-            return False
-        i += 6
-    return True
-
-# --- Funciones de Cifrado (retornan resultado y pasos) ---
-
-def caesar_cipher(text, k, decrypt=False):
-    op = "-" if decrypt else "+"
-    eff_k = -k if decrypt else k
-    steps = []
-    res = []
-    for char in text:
-        if char.upper() in ALPHABET:
-            start = ord('A') if char.isupper() else ord('a')
-            p_idx = ord(char) - start
-            c_idx = (p_idx + eff_k) % 26
-            new_char = chr(start + c_idx)
-            res.append(new_char)
-            steps.append((f"'{char}'", p_idx, f"({p_idx} {op} {k}) mod 26", c_idx, f"'{new_char}'"))
-        else:
-            res.append(char)
-            steps.append((f"'{char}'", "N/A", "No es letra, se omite", "N/A", f"'{char}'"))
-    return "".join(res), steps
-
-def affine_cipher(text, a, b, decrypt=False):
-    steps = []
-    res = []
-    if decrypt:
-        a_inv = modinv(a, 26)
-        steps.append((f"Paso 1: Inversa de a={a} mod 26 => a⁻¹={a_inv}", "", "", "", ""))
+    @staticmethod
+    def caesar_cipher(text, b, decrypt=False):
+        op = -1 if decrypt else 1
+        effective_k = op * b
+        result = ''
+        steps = []
         for char in text:
-            if char.upper() in ALPHABET:
-                p_idx = ALPHABET.index(char.upper())
-                c_idx = (a_inv * (p_idx - b) + 520) % 26
-                new_char = ALPHABET[c_idx]
-                res.append(new_char if char.isupper() else new_char.lower())
-                steps.append((f"'{char}'", p_idx, f"{a_inv}*({p_idx}-{b}) mod 26", c_idx, f"'{new_char}'"))
+            if char.upper() in CriptoMath.ALPHABET:
+                char_code = ord(char)
+                base = 65 if char.isupper() else 97
+                P = char_code - base
+                C = (P + effective_k) % 26
+                new_char = chr(base + C)
+                result += new_char
+                steps.append((f"'{char}' (P={P})", f"({P} {'-' if decrypt else '+'} {b}) mod 26", f"'{new_char}' (C={C})"))
             else:
-                res.append(char)
-                steps.append((f"'{char}'", "N/A", "No es letra", "N/A", f"'{char}'"))
-    else:
-        for char in text:
-            if char.upper() in ALPHABET:
-                p_idx = ALPHABET.index(char.upper())
-                c_idx = (a * p_idx + b) % 26
-                new_char = ALPHABET[c_idx]
-                res.append(new_char if char.isupper() else new_char.lower())
-                steps.append((f"'{char}'", p_idx, f"({a}*{p_idx}+{b}) mod 26", c_idx, f"'{new_char}'"))
-            else:
-                res.append(char)
-                steps.append((f"'{char}'", "N/A", "No es letra", "N/A", f"'{char}'"))
-    return "".join(res), steps
+                result += char
+                steps.append((f"'{char}'", 'No es una letra', f"'{char}'"))
+        return {'result': result, 'steps': steps}
 
-def vigenere_cipher(text, key, decrypt=False):
-    op = "-" if decrypt else "+"
-    clean_key = "".join(filter(str.isalpha, key)).upper()
-    if not clean_key: raise ValueError("La clave debe contener letras.")
-    steps = []
-    res = []
-    key_i = 0
-    for char in text:
-        if char.upper() in ALPHABET:
-            k_char = clean_key[key_i % len(clean_key)]
-            k_shift = ALPHABET.index(k_char)
-            eff_k = -k_shift if decrypt else k_shift
-            start = ord('A') if char.isupper() else ord('a')
-            p_idx = ord(char) - start
-            c_idx = (p_idx + eff_k) % 26
-            new_char = chr(start + c_idx)
-            res.append(new_char)
-            steps.append((f"'{char}'", f"'{k_char}'", k_shift, f"({p_idx} {op} {k_shift}) mod 26", f"'{new_char}'"))
-            key_i += 1
+    @staticmethod
+    def affine_cipher(text, a, b, decrypt=False):
+        result, steps = '', []
+        if decrypt:
+            a_inv = CriptoMath.modinv(a, 26)
+            steps.append(("Paso 1: Inversa", f"Inversa de a={a} mod 26", f"a⁻¹ = {a_inv}"))
+            for char in text:
+                if char.upper() in CriptoMath.ALPHABET:
+                    C = CriptoMath.ALPHABET.find(char.upper())
+                    P = (a_inv * (C - b)) % 26
+                    new_char = CriptoMath.ALPHABET[P]
+                    result += new_char.lower() if char.islower() else new_char
+                    steps.append((f"'{char}' (C={C})", f"{a_inv}*({C}-{b}) mod 26", f"'{new_char}' (P={P})"))
+                else:
+                    result += char
+                    steps.append((f"'{char}'", 'No es una letra', f"'{char}'"))
         else:
-            res.append(char)
-            steps.append((f"'{char}'", "N/A", "N/A", "No es letra", f"'{char}'"))
-    return "".join(res), steps
+            for char in text:
+                if char.upper() in CriptoMath.ALPHABET:
+                    P = CriptoMath.ALPHABET.find(char.upper())
+                    C = (a * P + b) % 26
+                    new_char = CriptoMath.ALPHABET[C]
+                    result += new_char.lower() if char.islower() else new_char
+                    steps.append((f"'{char}' (P={P})", f"({a}*{P}+{b}) mod 26", f"'{new_char}' (C={C})"))
+                else:
+                    result += char
+                    steps.append((f"'{char}'", 'No es una letra', f"'{char}'"))
+        return {'result': result, 'steps': steps}
 
-def otp_cipher(text, key, decrypt=False):
-    return vigenere_cipher(text, key, decrypt)
-
-def rsa_cipher(text, N, key, mode):
-    steps = []
-    if mode == 'enc':
-        result_nums = []
+    @staticmethod
+    def vigenere_cipher(text, key, decrypt=False):
+        clean_key = ''.join(filter(str.isalpha, key)).upper()
+        if not clean_key: raise ValueError("La llave debe contener al menos una letra.")
+        result, steps, key_index = '', [], 0
         for char in text:
-            m = ord(char)
-            if m >= N: raise ValueError(f"El valor del caracter '{char}' (ASCII={m}) es >= que N={N}. Use p y q más grandes.")
-            c = power(m, key, N)
-            result_nums.append(str(c))
-            steps.append((f"'{char}' (m={m})", f"c = {m}^{key} mod {N}", f"c = {c}"))
-        return ",".join(result_nums), steps
-    else:
-        result_text = []
-        try:
-            cipher_nums = [int(n.strip()) for n in text.split(',')]
-        except ValueError:
-            raise ValueError(f"Entrada '{text}' contiene valores no numéricos o formato incorrecto.")
-        for c in cipher_nums:
-            m = power(c, key, N)
-            char = chr(m)
-            result_text.append(char)
-            steps.append((f"c={c}", f"m = {c}^{key} mod {N}", f"m = {m} ('{char}')"))
-        return "".join(result_text), steps
+            if char.isalpha():
+                k_char = clean_key[key_index % len(clean_key)]
+                k_shift = CriptoMath.ALPHABET.find(k_char)
+                sub_res = CriptoMath.caesar_cipher(char, k_shift, decrypt)
+                result += sub_res['result']
+                steps.append((f"'{char}'", f"'{k_char}'", k_shift, sub_res['steps'][0][1], sub_res['steps'][0][2]))
+                key_index += 1
+            else:
+                result += char
+                steps.append((f"'{char}'", 'N/A', 'N/A', 'No es una letra', f"'{char}'"))
+        return {'result': result, 'steps': steps}
+        
+    @staticmethod
+    def one_time_pad_cipher(text, key, decrypt=False):
+        clean_key = ''.join(filter(str.isalpha, key)).upper()
+        clean_text = ''.join(filter(str.isalpha, text))
+        if len(clean_key) != len(clean_text):
+            raise ValueError(f"La longitud del mensaje ({len(clean_text)}) y la llave ({len(clean_key)}) deben ser iguales.")
+        # OTP es un caso especial de Vigenère
+        return CriptoMath.vigenere_cipher(text, key, decrypt)
 
-def get_euclides_steps(a, b):
-    steps = []
-    A, B = abs(a), abs(b)
-    if B > A: A, B = B, A
-    while B != 0:
-        q, r = A // B, A % B
-        steps.append((A, B, q, r))
-        A, B = B, r
-    return steps
+    @staticmethod
+    def rsa_cipher(text, N, key, mode):
+        steps = []
+        if mode == 'enc':
+            result = []
+            for char in text:
+                m = ord(char)
+                if m >= N: raise ValueError(f"El valor ASCII de '{char}' ({m}) es >= N ({N}). Use primos p,q más grandes.")
+                c = CriptoMath.power(m, key, N)
+                result.append(str(c))
+                steps.append((f"'{char}' (m={m})", f"c = {m}^{key} mod {N}", f"c = {c}"))
+            return {'result': ",".join(result), 'steps': steps}
+        else: # dec
+            result = ''
+            try:
+                cipher_nums = [int(n.strip()) for n in text.split(',') if n.strip()]
+            except (ValueError, TypeError):
+                raise ValueError("El texto cifrado debe ser una lista de números separados por comas.")
+            
+            for c in cipher_nums:
+                m = CriptoMath.power(c, key, N)
+                char = chr(m)
+                result += char
+                steps.append((f"c={c}", f"m = {c}^{key} mod {N}", f"m = {m} ('{char}')"))
+            return {'result': result, 'steps': steps}
+            
+    @staticmethod
+    def euclides_algorithm(initial_a, initial_b):
+        steps = []
+        fa, fb = initial_a, initial_b
+        if fa == 0 and fb == 0:
+            raise ValueError("mcd(0, 0) no está definido.")
+        a, b = abs(initial_a), abs(initial_b)
+        prevx, x = 1, 0
+        prevy, y = 0, 1
 
-def chinese_remainder_theorem(congruences):
-    steps = []
-    moduli = [c[1] for c in congruences]
-    for i in range(len(moduli)):
-        if moduli[i] <= 1: raise ValueError(f"Módulo n_{i+1}={moduli[i]} debe ser > 1.")
-        for j in range(i + 1, len(moduli)):
-            g = mcd(moduli[i], moduli[j])
-            if g != 1: raise ValueError(f"Módulos no son coprimos: mcd({moduli[i]}, {moduli[j]}) = {g}.")
-    N = 1
-    for n in moduli: N *= n
-    steps.append(("Calcular N", f"N = {' * '.join(map(str, moduli))}", f"N = {N}"))
-    total_sum = 0
-    terms_str = []
-    for i, (a_i, n_i) in enumerate(congruences, 1):
-        N_i = N // n_i
-        y_i = modinv(N_i, n_i)
-        term = a_i * N_i * y_i
-        terms_str.append(str(term))
-        total_sum += term
-        steps.append((f"Congruencia {i}", f"aᵢ={a_i}, nᵢ={n_i}", "---"))
-        steps.append(("", f"Nᵢ = N / nᵢ = {N} / {n_i}", f"Nᵢ = {N_i}"))
-        steps.append(("", f"yᵢ = (Nᵢ)⁻¹ mod nᵢ", f"yᵢ = {y_i}"))
-        steps.append(("", f"Término = aᵢ*Nᵢ*yᵢ", f"{term}"))
-    final_x = total_sum % N
-    steps.append(("Sumar términos", f"X = ({' + '.join(terms_str)}) mod {N}", f"X = {final_x}"))
-    return f"x ≡ {final_x} (mod {N})", steps
+        while b:
+            q = a // b
+            r = a % b
+            division_step = f"{a} = {b} * {q} + {r}"
+            
+            temp_x = x
+            x = prevx - q * x
+            prevx = temp_x
 
-# ============================================
-# Interfaz Gráfica (GUI - Tkinter)
-# ============================================
-class CustomModal(tk.Toplevel):
-    def __init__(self, parent, title, message):
-        super().__init__(parent)
-        self.transient(parent)
-        self.title(title)
-        self.geometry("400x150")
-        self.resizable(False, False)
-        main_frame = ttk.Frame(self, padding=20)
-        main_frame.pack(fill="both", expand=True)
-        ttk.Label(main_frame, text=title, font=("Segoe UI", 14, "bold")).pack(anchor="w")
-        ttk.Label(main_frame, text=message, wraplength=360, justify="left").pack(anchor="w", pady=10)
-        button_frame = ttk.Frame(main_frame)
-        button_frame.pack(fill="x", side="bottom", pady=(10,0))
-        ok_button = ttk.Button(button_frame, text="Entendido", command=self.destroy, style="Accent.TButton")
-        ok_button.pack(side="right")
-        self.grab_set()
-        self.lift()
-        x = parent.winfo_x() + (parent.winfo_width() // 2) - (self.winfo_width() // 2)
-        y = parent.winfo_y() + (parent.winfo_height() // 2) - (self.winfo_height() // 2)
-        self.geometry(f'+{x}+{y}')
-        parent.wait_window(self)
+            temp_y = y
+            y = prevy - q * y
+            prevy = temp_y
+            
+            bezout_step = f"{r} = {fa}({x}) + {fb}({y})" if r else '---'
+            steps.append((division_step, bezout_step))
+            a, b = b, r
 
-class App(tk.Tk):
+        g = a
+        x_final, y_final = prevx, prevy
+        result = f"mcd({fa}, {fb}) = {g}\nIdentidad de Bézout: {fa}({x_final}) + {fb}({y_final}) = {g}"
+        return {'result': result, 'steps': steps}
+
+    @staticmethod
+    def chinese_remainder_theorem(congruences):
+        steps = []
+        if len(congruences) < 2:
+            raise ValueError("Se necesitan al menos dos congruencias.")
+
+        moduli = [n for r, n in congruences]
+        for i in range(len(moduli)):
+            if moduli[i] <= 1:
+                raise ValueError(f"El módulo n_{i+1}={moduli[i]} debe ser > 1.")
+            for j in range(i + 1, len(moduli)):
+                if CriptoMath.mcd(moduli[i], moduli[j]) != 1:
+                    raise ValueError(f"Módulos no coprimos: mcd({moduli[i]}, {moduli[j]}) = {CriptoMath.mcd(moduli[i], moduli[j])} ≠ 1.")
+        
+        r1, n1 = congruences[0]
+        for i in range(1, len(congruences)):
+            r2, n2 = congruences[i]
+            steps.append((f"Resolviendo sistema parcial:", "", ""))
+            steps.append((f"n ≡ {r1} (mod {n1})", "", ""))
+            steps.append((f"n ≡ {r2} (mod {n2})", "", ""))
+
+            g, x, y = CriptoMath.egcd(n1, n2)
+            steps.append(("Usar Euclides Extendido", f"1 = {n1}({x}) + {n2}({y})", f"x={x}, y={y}"))
+
+            n12 = r1 * y * n2 + r2 * x * n1
+            steps.append(("Calcular n_1,2", f"r₁*y*n₂ + r₂*x*n₁", f"= {n12}"))
+
+            new_mod = n1 * n2
+            # CORRECCIÓN: Asegurar que el resultado del módulo sea positivo
+            r1 = (n12 % new_mod + new_mod) % new_mod
+            n1 = new_mod
+            steps.append(("Nueva congruencia", f"n ≡ {n12} (mod {new_mod})", f"n ≡ {r1} (mod {n1})"))
+
+        N = math.prod(moduli)
+        result_str = f"n ≡ {r1} (mod {N})"
+        return {'result': result_str, 'steps': steps}
+
+# =================================================================================================
+# SECCIÓN 2: APLICACIÓN PRINCIPAL (GUI con TKINTER)
+# =================================================================================================
+class CriptoSuiteApp(tk.Tk):
     def __init__(self):
         super().__init__()
-        self.withdraw()
-        self.title("CriptoSuite Profesional")
-        self.geometry("1100x750")
-        self.minsize(950, 650)
-        if USE_SV_TTK: sv_ttk.set_theme("light")
+        self.title("CriptoSuite Profesional (Python Edition)")
+        self.geometry("1200x750")
+        self.minsize(1000, 600)
+
+        # --- Estilo y Fuentes ---
         self.style = ttk.Style(self)
-        self.font_normal = font.Font(family="Segoe UI", size=10)
-        self.font_bold = font.Font(family="Segoe UI", size=10, weight="bold")
-        self.font_header = font.Font(family="Segoe UI", size=16, weight="bold")
-        self.font_result = font.Font(family="Segoe UI", size=16, weight="bold")
-        self.create_widgets()
-        self.show_splash_screen()
+        try:
+            # Intenta usar un tema moderno si está disponible
+            from sv_ttk import set_theme
+            set_theme("light")
+        except ImportError:
+            self.style.theme_use('clam')
 
-    def show_splash_screen(self):
-        splash = tk.Toplevel(self)
-        splash.overrideredirect(True)
-        width, height = 450, 300
-        x = (self.winfo_screenwidth() / 2) - (width / 2)
-        y = (self.winfo_screenheight() / 2) - (height / 2)
-        splash.geometry(f'{width}x{height}+{int(x)}+{int(y)}')
+        self.font_normal = font.nametofont("TkDefaultFont")
+        self.font_bold = self.font_normal.copy(); self.font_bold.configure(weight="bold")
+        self.font_title = self.font_normal.copy(); self.font_title.configure(size=16, weight="bold")
+        self.font_result = font.Font(family="Consolas", size=14, weight="bold")
+        self.font_small = self.font_normal.copy(); self.font_small.configure(size=9)
         
-        # CORRECCIÓN: Usar un pixel transparente 1x1 GIF, universalmente compatible.
-        logo_data = "R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"
+        self.configure(bg="#f3f4f6")
+        self.style.configure("TFrame", background="#f3f4f6")
+        self.style.configure("Card.TFrame", background="white", relief="solid", borderwidth=1, bordercolor="#d1d5db")
+        self.style.configure("TLabel", background="#f3f4f6")
+        self.style.configure("Card.TLabel", background="white")
+        self.style.configure("Header.TLabel", font=self.font_title, foreground="#007aff", background="white")
+        self.style.configure("Result.TLabel", font=self.font_result, background="#f3f4f6")
+        self.style.configure("Success.TLabel", foreground="#10b981", background="white")
+        self.style.configure("Error.TLabel", foreground="#ef4444", background="white")
+        self.style.configure("Treeview", rowheight=28, fieldbackground="white")
+        self.style.configure("Treeview.Heading", font=self.font_bold)
+        self.style.configure("TNotebook", borderwidth=0)
+        self.style.layout("TNotebook.Tab", []) # Ocultar tabs
+
+        self._create_layout()
+
+    def _create_layout(self):
+        # Layout principal (Sidebar + Contenido)
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+
+        # --- Sidebar de Navegación ---
+        sidebar = ttk.Frame(self, width=250, style="Card.TFrame")
+        sidebar.grid(row=0, column=0, sticky="ns", padx=(10,0), pady=10)
+        sidebar.grid_propagate(False)
         
-        self.espol_logo = tk.PhotoImage(data=logo_data)
-        # Se crea un label invisible para el logo para mantener la estructura sin mostrarlo
-        logo_label = ttk.Label(splash, image=self.espol_logo)
-        logo_label.pack(pady=(30, 15)) # Se mantiene el padding para el espaciado
+        ttk.Label(sidebar, text="CriptoSuite", style="Header.TLabel").pack(pady=20, padx=20, anchor='w')
 
-        ttk.Label(splash, text="Bienvenido a CriptoSuite", font=("Segoe UI", 20, "bold")).pack()
-        ttk.Label(splash, text="Una herramienta académica para Criptografía\nEscuela Superior Politécnica del Litoral", 
-                  wraplength=400, justify="center").pack(pady=10)
-        start_button = ttk.Button(splash, text="Iniciar", command=lambda: self.start_app(splash), style="Accent.TButton")
-        start_button.pack(pady=20, ipadx=20)
+        self.nav_buttons = {}
+        self.notebook = ttk.Notebook(self, style="TNotebook")
+        self.notebook.grid(row=0, column=1, sticky="nsew", padx=10, pady=10)
+        self.notebook.bind("<<NotebookTabChanged>>", self._on_tab_change)
 
-    def start_app(self, splash):
-        splash.destroy()
-        self.deiconify()
+        # Definición de herramientas
+        tools = [
+            ("Cifrado César", self._setup_cesar_ui),
+            ("Cifrado Afín", self._setup_afin_ui),
+            ("Euclides y MCD", self._setup_euclides_ui),
+            ("Inverso Modular", self._setup_inverso_ui),
+            ("T. Chino Residuo", self._setup_tcr_ui),
+            None, # Separador
+            ("C. Vigenère", self._setup_vigenere_ui),
+            ("One-Time Pad", self._setup_otp_ui),
+            ("Criptosistema RSA", self._setup_rsa_ui)
+        ]
 
-    def create_widgets(self):
-        sidebar = ttk.Frame(self, padding=10)
-        sidebar.pack(side="left", fill="y")
-        self.content_area = ttk.Frame(self, padding=(20, 10, 10, 10))
-        self.content_area.pack(side="right", fill="both", expand=True)
-        self.content_area.rowconfigure(0, weight=1); self.content_area.columnconfigure(0, weight=1)
-        ttk.Label(sidebar, text="CriptoSuite", font=self.font_header).pack(anchor="w", pady=(0, 20))
-        self.frames = {}
-        for F, name in [
-            (CesarFrame, "Cifrado César"), (AfinFrame, "Cifrado Afín"),
-            (VigenereFrame, "Cifrado Vigenère"), (OTPFrame, "One-Time Pad"),
-            (RSAFrame, "Criptosistema RSA"), (EuclidesFrame, "Euclides y MCD"),
-            (TCRFrame, "Teorema Chino del Residuo")
-        ]:
-            frame = F(self.content_area, self)
-            self.frames[name] = frame
-            frame.grid(row=0, column=0, sticky="nsew")
-            b = ttk.Button(sidebar, text=name, command=lambda f=name: self.show_frame(f), style="Accent.TButton")
-            b.pack(fill="x", pady=3)
-        self.show_frame("Cifrado César")
+        # Mapeo de índices de notebook a índices de botones (saltando el separador)
+        self.button_map = {i if i < 5 else i-1: i for i in range(len(tools))}
 
-    def show_frame(self, name):
-        for frame in self.frames.values(): frame.grid_remove()
-        self.frames[name].grid()
-        self.title(f"CriptoSuite Profesional - {name}")
+        for i, tool_info in enumerate(tools):
+            if tool_info is None:
+                ttk.Separator(sidebar).pack(fill='x', padx=20, pady=10)
+                continue
+            
+            name, setup_func = tool_info
+            
+            # Crear botón de navegación
+            btn_index = i if i < 5 else i -1 # Ajustar índice por el separador
+            btn = ttk.Button(sidebar, text=name, command=lambda index=len(self.notebook.tabs()): self.notebook.select(index))
+            btn.pack(fill='x', padx=20, pady=2)
+            self.nav_buttons[btn_index] = btn
+            
+            # Crear el frame para la herramienta (la "pestaña")
+            tool_frame = ttk.Frame(self.notebook)
+            self.notebook.add(tool_frame, text=name)
+            
+            # poblar la pestaña con sus controles y salidas
+            controls, output = self._create_base_panels(tool_frame)
+            ttk.Label(controls, text=name, style="Header.TLabel").pack(pady=(0, 20), padx=20, anchor='w')
+            setup_func(controls, output)
+            
+        self._on_tab_change() # Seleccionar el primer botón
 
-class BaseFrame(ttk.Frame):
-    def __init__(self, master, app_instance):
-        super().__init__(master)
-        self.app = app_instance
-        self.columnconfigure(1, weight=1); self.rowconfigure(0, weight=1)
-        self._create_widgets()
-    def _create_widgets(self): raise NotImplementedError
-    def show_error(self, title, msg): CustomModal(self.app, title, msg)
-    def _create_io_widgets(self):
-        controls_parent = ttk.Labelframe(self, text=" Controles ", padding=15)
-        controls_parent.grid(row=0, column=0, sticky="ns", padx=(0, 10))
-        self.controls_frame = ttk.Frame(controls_parent)
-        self.controls_frame.pack(fill="x", expand=True)
-        notebook = ttk.Notebook(self)
-        notebook.grid(row=0, column=1, sticky="nsew")
-        res_frame = ttk.Frame(notebook, padding=20)
-        notebook.add(res_frame, text="Resultado")
-        res_frame.columnconfigure(0, weight=1); res_frame.rowconfigure(1, weight=1)
-        ttk.Label(res_frame, text="Resultado Final:", font=self.app.font_bold).grid(row=0, column=0, sticky="w")
-        self.result_var = tk.StringVar(value="-")
-        result_entry = ttk.Entry(res_frame, textvariable=self.result_var, font=self.app.font_result, state="readonly")
-        result_entry.grid(row=1, column=0, sticky="nsew", pady=(5,0))
-        steps_frame = ttk.Frame(notebook, padding=10)
-        notebook.add(steps_frame, text="Proceso Matemático Detallado")
-        steps_frame.columnconfigure(0, weight=1); steps_frame.rowconfigure(0, weight=1)
-        self.steps_tree = ttk.Treeview(steps_frame, show="headings")
-        self.steps_tree.grid(sticky="nsew")
-        scrollbar = ttk.Scrollbar(steps_frame, orient="vertical", command=self.steps_tree.yview)
-        scrollbar.grid(row=0, column=1, sticky="ns")
-        self.steps_tree.configure(yscrollcommand=scrollbar.set)
-    def _setup_treeview(self, columns):
-        self.steps_tree.delete(*self.steps_tree.get_children())
-        self.steps_tree["columns"] = columns
-        for col in columns:
-            self.steps_tree.heading(col, text=col, anchor="w")
-            self.steps_tree.column(col, anchor="w", width=120, stretch=True)
-    def _update_output(self, result, steps, columns):
-        self.result_var.set(result)
-        self._setup_treeview(columns)
-        for i, row in enumerate(steps):
-            self.steps_tree.insert("", "end", iid=i, values=row)
-    def _create_text_input(self, var_name, label_text):
-        ttk.Label(self.controls_frame, text=label_text, font=self.app.font_bold).pack(anchor="w", pady=(10, 2))
-        setattr(self, var_name, tk.StringVar())
-        entry = ttk.Entry(self.controls_frame, textvariable=getattr(self, var_name))
-        entry.pack(fill="x")
-        return entry
-    def _create_mode_selector(self):
-        self.mode_var = tk.StringVar(value="enc")
-        f = ttk.Frame(self.controls_frame)
-        f.pack(anchor="w", pady=10)
-        ttk.Radiobutton(f, text="Encriptar", value="enc", variable=self.mode_var).pack(side="left")
-        ttk.Radiobutton(f, text="Desencriptar", value="dec", variable=self.mode_var).pack(side="left", padx=10)
+    def _on_tab_change(self, event=None):
+        current_index = self.notebook.index(self.notebook.select())
+        for index, button in self.nav_buttons.items():
+            button.state(["pressed"] if index == current_index else ["!pressed"])
 
-class CesarFrame(BaseFrame):
-    def _create_widgets(self):
-        self._create_io_widgets()
-        self._create_text_input("text_var", "Texto:")
-        self.text_var.set("HELLO WORLD")
-        ttk.Label(self.controls_frame, text="Desplazamiento (k):", font=self.app.font_bold).pack(anchor="w", pady=(10, 2))
-        self.k_var = tk.StringVar(value="3")
-        ttk.Spinbox(self.controls_frame, from_=0, to=25, textvariable=self.k_var, wrap=True).pack(fill="x")
-        self._create_mode_selector()
-        ttk.Separator(self.controls_frame, orient="horizontal").pack(fill="x", pady=20)
-        ttk.Button(self.controls_frame, text="Ejecutar", command=self.run, style="Accent.TButton").pack(anchor="w")
-    def run(self):
-        try:
-            k, text = int(self.k_var.get()), self.text_var.get()
-            if not text: raise ValueError("El texto no puede estar vacío.")
-            result, steps = caesar_cipher(text, k, self.mode_var.get() == "dec")
-            self._update_output(result, steps, ("Entrada", "Índice P", "Cálculo", "Índice C", "Salida"))
-        except ValueError as e: self.show_error('Error en Cifrado César', str(e))
-
-class AfinFrame(BaseFrame):
-    def _create_widgets(self):
-        self._create_io_widgets()
-        self._create_text_input("text_var", "Texto:")
-        self.text_var.set("AFFINE CIPHER")
-        ttk.Label(self.controls_frame, text="Valor 'a' (coprimo con 26):", font=self.app.font_bold).pack(anchor="w", pady=(10, 2))
-        self.a_var = tk.StringVar()
-        valid_a = [i for i in range(1, 26) if mcd(i, 26) == 1]
-        a_combo = ttk.Combobox(self.controls_frame, textvariable=self.a_var, values=valid_a, state="readonly")
-        a_combo.set(valid_a[2]); a_combo.pack(fill="x")
-        ttk.Label(self.controls_frame, text="Valor 'b':", font=self.app.font_bold).pack(anchor="w", pady=(10, 2))
-        self.b_var = tk.StringVar(value="8")
-        ttk.Entry(self.controls_frame, textvariable=self.b_var).pack(fill="x")
-        self._create_mode_selector()
-        ttk.Separator(self.controls_frame, orient="horizontal").pack(fill="x", pady=20)
-        ttk.Button(self.controls_frame, text="Ejecutar", command=self.run, style="Accent.TButton").pack(anchor="w")
-    def run(self):
-        try:
-            text = self.text_var.get()
-            if not text: raise ValueError("El texto no puede estar vacío.")
-            a, b = int(self.a_var.get()), int(self.b_var.get())
-            result, steps = affine_cipher(text, a, b, self.mode_var.get() == "dec")
-            headers = ("Entrada", "Índice C", "Cálculo", "Índice P", "Salida") if self.mode_var.get() == "dec" else ("Entrada", "Índice P", "Cálculo", "Índice C", "Salida")
-            self._update_output(result, steps, headers)
-        except ValueError as e: self.show_error('Error en Cifrado Afín', f"Entrada inválida. 'a' y 'b' deben ser números.\nDetalle: {e}")
-
-class VigenereFrame(BaseFrame):
-    def _create_widgets(self):
-        self._create_io_widgets()
-        self._create_text_input("text_var", "Texto:")
-        self.text_var.set("ATTACK AT DAWN")
-        self._create_text_input("key_var", "Clave:")
-        self.key_var.set("LEMON")
-        self._create_mode_selector()
-        ttk.Separator(self.controls_frame, orient="horizontal").pack(fill="x", pady=20)
-        ttk.Button(self.controls_frame, text="Ejecutar", command=self.run, style="Accent.TButton").pack(anchor="w")
-    def run(self):
-        try:
-            text, key = self.text_var.get(), self.key_var.get()
-            if not text or not key: raise ValueError("El texto y la clave no pueden estar vacíos.")
-            result, steps = vigenere_cipher(text, key, self.mode_var.get() == "dec")
-            self._update_output(result, steps, ("Entrada", "Clave", "Shift", "Cálculo", "Salida"))
-        except ValueError as e: self.show_error("Error en Cifrado Vigenère", str(e))
-
-class OTPFrame(BaseFrame):
-    def _create_widgets(self):
-        self._create_io_widgets()
-        self._create_text_input("text_var", "Texto:")
-        self.text_var.set("SECRET MESSAGE")
-        self._create_text_input("key_var", "Clave:")
-        ttk.Button(self.controls_frame, text="Generar Clave Aleatoria", command=self.generate_key).pack(anchor="w", pady=5)
-        self._create_mode_selector()
-        ttk.Separator(self.controls_frame, orient="horizontal").pack(fill="x", pady=20)
-        ttk.Button(self.controls_frame, text="Ejecutar", command=self.run, style="Accent.TButton").pack(anchor="w")
-    def generate_key(self):
-        text_only_letters = ''.join(filter(str.isalpha, self.text_var.get()))
-        self.key_var.set(''.join(random.choice(ALPHABET) for _ in range(len(text_only_letters))))
-    def run(self):
-        try:
-            text, key = self.text_var.get(), self.key_var.get()
-            clean_text = ''.join(filter(str.isalpha, text))
-            clean_key = ''.join(filter(str.isalpha, key))
-            if len(clean_text) != len(clean_key):
-                raise ValueError(f"La longitud del texto ({len(clean_text)}) y la clave ({len(clean_key)}) deben ser iguales.")
-            result, steps = otp_cipher(text, key, self.mode_var.get() == "dec")
-            self._update_output(result, steps, ("Entrada", "Clave", "Shift", "Cálculo", "Salida"))
-        except ValueError as e: self.show_error("Error en One-Time Pad", str(e))
-
-class RSAFrame(BaseFrame):
-    def _create_widgets(self):
-        self._create_io_widgets()
-        self.p_var = tk.StringVar(value="61")
-        self.q_var = tk.StringVar(value="53")
-        self.e_var = tk.StringVar(value="17")
-        keys_fs = ttk.Labelframe(self.controls_frame, text=" 1. Generación de Claves ", padding=10)
-        keys_fs.pack(fill="x", pady=(10,0))
-        ttk.Label(keys_fs, text="Número primo (p):").pack(anchor="w")
-        self.p_input = ttk.Entry(keys_fs, textvariable=self.p_var)
-        self.p_input.pack(fill="x")
-        self.p_validation_label = ttk.Label(keys_fs, foreground="red")
-        self.p_validation_label.pack(anchor="w")
-        ttk.Label(keys_fs, text="Número primo (q):").pack(anchor="w")
-        self.q_input = ttk.Entry(keys_fs, textvariable=self.q_var)
-        self.q_input.pack(fill="x")
-        self.q_validation_label = ttk.Label(keys_fs, foreground="red")
-        self.q_validation_label.pack(anchor="w")
-        ttk.Label(keys_fs, text="Exponente público (e):").pack(anchor="w")
-        self.e_input = ttk.Entry(keys_fs, textvariable=self.e_var)
-        self.e_input.pack(fill="x")
-        self.e_validation_label = ttk.Label(keys_fs, foreground="red")
-        self.e_validation_label.pack(anchor="w")
-        self.gen_button = ttk.Button(keys_fs, text="Generar y Mostrar Claves", command=self.generate_keys, style="Accent.TButton")
-        self.gen_button.pack(anchor="w", pady=10)
-        ttk.Separator(keys_fs).pack(fill="x", pady=10)
-        self._create_text_input("public_key_var", "Clave Pública (N, e):")
-        self._create_text_input("private_key_var", "Clave Privada (d):")
-        self._create_text_input("n_var", "Módulo (N):")
-        self._create_text_input("phi_n_var", "Phi(N) - φ(N):")
-        cipher_fs = ttk.Labelframe(self.controls_frame, text=" 2. Cifrado / Descifrado ", padding=10)
-        cipher_fs.pack(fill="x", pady=20)
-        self._create_text_input("rsa_text_var", "Texto o Números (separados por coma):")
-        self._create_mode_selector()
-        ttk.Separator(self.controls_frame).pack(fill="x", pady=10)
-        self.exec_button = ttk.Button(self.controls_frame, text="Ejecutar", command=self.run, style="Accent.TButton")
-        self.exec_button.pack(anchor="w")
-        self.p_var.trace_add("write", self._validate_inputs)
-        self.q_var.trace_add("write", self._validate_inputs)
-        self.e_var.trace_add("write", self._validate_inputs)
-        self._validate_inputs()
-        self.generate_keys()
-
-    def _validate_inputs(self, *args):
-        p, q, e = self.p_var.get(), self.q_var.get(), self.e_var.get()
-        p_ok, q_ok, e_ok = False, False, False
-        try: p_int = int(p); q_int = int(q); e_int = int(e)
-        except ValueError: pass
-
-        try:
-            p_int = int(p)
-            if not is_prime(p_int): self.p_validation_label.config(text="p debe ser un número primo.")
-            else: self.p_validation_label.config(text=""); p_ok = True
-        except (ValueError, TypeError): self.p_validation_label.config(text="p debe ser un entero.")
+    def _create_base_panels(self, parent):
+        parent.grid_columnconfigure(1, weight=1)
+        parent.grid_rowconfigure(0, weight=1)
         
-        try:
-            q_int = int(q)
-            if not is_prime(q_int): self.q_validation_label.config(text="q debe ser un número primo.")
-            elif p_ok and p_int == q_int: self.q_validation_label.config(text="p y q no pueden ser iguales.")
-            else: self.q_validation_label.config(text=""); q_ok = True
-        except (ValueError, TypeError): self.q_validation_label.config(text="q debe ser un entero.")
+        controls = ttk.Frame(parent, style="Card.TFrame", width=380)
+        controls.grid(row=0, column=0, sticky="ns", pady=10, padx=(10,5))
+        controls.pack_propagate(False)
+
+        output = ttk.Frame(parent, style="TFrame")
+        output.grid(row=0, column=1, sticky="nsew", pady=10, padx=(5,10))
+        output.grid_rowconfigure(2, weight=1)
+        output.grid_columnconfigure(0, weight=1)
         
-        if p_ok and q_ok:
+        return controls, output
+
+    # --- Constructores de UI para cada Herramienta ---
+
+    def _setup_cesar_ui(self, controls, output):
+        ttk.Label(controls, text="Texto:", style="Card.TLabel", font=self.font_bold).pack(anchor='w', padx=20)
+        text_in = tk.Text(controls, height=5, font=self.font_normal, relief='solid', borderwidth=1, highlightthickness=1)
+        text_in.pack(fill='x', padx=20, pady=5)
+        text_in.insert("1.0", "HELLO WORLD")
+        
+        ttk.Label(controls, text="Shift (b):", style="Card.TLabel", font=self.font_bold).pack(anchor='w', padx=20, pady=(10,0))
+        b_in = ttk.Entry(controls); b_in.pack(fill='x', padx=20, pady=5); b_in.insert(0, "3")
+
+        mode, result_text, steps_tree = self._common_widgets(controls, output, ["Entrada", "Cálculo", "Salida"])
+
+        def execute():
             try:
-                e_int = int(e)
-                phiN = (p_int - 1) * (q_int - 1)
-                if mcd(e_int, phiN) != 1: self.e_validation_label.config(text=f"e debe ser coprimo con φ(N) = {phiN}.")
-                elif not (1 < e_int < phiN): self.e_validation_label.config(text=f"e debe estar entre 1 y {phiN}.")
-                else: self.e_validation_label.config(text=""); e_ok = True
-            except (ValueError, TypeError): self.e_validation_label.config(text="e debe ser un entero.")
-        else:
-            self.e_validation_label.config(text="p y q deben ser válidos primero.")
-        self.gen_button.config(state="normal" if (p_ok and q_ok and e_ok) else "disabled")
+                b_val = int(b_in.get())
+                if b_val < 0:
+                    raise ValueError("El shift 'b' no puede ser negativo.")
+                res = CriptoMath.caesar_cipher(text_in.get("1.0", "end-1c"), b_val, mode.get()=='dec')
+                result_text.config(text=res['result'])
+                self._update_tree(steps_tree, res['steps'])
+            except ValueError as e: 
+                messagebox.showerror("Error de Entrada", f"Valor inválido para 'b'.\n{e}")
+            except Exception as e: 
+                messagebox.showerror("Error", str(e))
+            
+        ttk.Button(controls, text="Ejecutar", command=execute).pack(fill='x', side='bottom', padx=20, pady=20)
 
-    def generate_keys(self):
-        try:
-            p, q, e = int(self.p_var.get()), int(self.q_var.get()), int(self.e_var.get())
-            N = p * q; phiN = (p - 1) * (q - 1); d = modinv(e, phiN)
-            self.public_key_var.set(f"({N}, {e})"); self.private_key_var.set(d)
-            self.n_var.set(N); self.phi_n_var.set(phiN)
-            self.exec_button.config(state="normal")
-        except ValueError as e: self.show_error("Error en Generación de Claves", str(e)); self.exec_button.config(state="disabled")
+    def _setup_afin_ui(self, controls, output):
+        ttk.Label(controls, text="Texto:", style="Card.TLabel", font=self.font_bold).pack(anchor='w', padx=20)
+        text_in = tk.Text(controls, height=5, font=self.font_normal, relief='solid', borderwidth=1, highlightthickness=1)
+        text_in.pack(fill='x', padx=20, pady=5); text_in.insert("1.0", "AFFINE CIPHER")
+        
+        ttk.Label(controls, text="Parámetro (a):", style="Card.TLabel", font=self.font_bold).pack(anchor='w', padx=20, pady=(10,0))
+        coprimes = [1, 3, 5, 7, 9, 11, 15, 17, 19, 21, 23, 25]
+        a_in = ttk.Combobox(controls, values=coprimes, state="readonly"); a_in.pack(fill='x', padx=20, pady=5); a_in.set(5)
+        
+        ttk.Label(controls, text="Parámetro (b):", style="Card.TLabel", font=self.font_bold).pack(anchor='w', padx=20, pady=(10,0))
+        b_in = ttk.Entry(controls); b_in.pack(fill='x', padx=20, pady=5); b_in.insert(0, "8")
+        
+        mode, result_text, steps_tree = self._common_widgets(controls, output, ["Entrada", "Cálculo", "Salida"])
 
-    def run(self):
-        try:
-            N = int(self.n_var.get()); mode = self.mode_var.get()
-            key = int(self.e_var.get()) if mode == 'enc' else int(self.private_key_var.get())
-            text = self.rsa_text_var.get()
-            if not text: raise ValueError("El campo de texto no puede estar vacío.")
-            result, steps = rsa_cipher(text, N, key, mode)
-            headers = ("Entrada (m)", "Cálculo", "Resultado (c)") if mode == 'enc' else ("Entrada (c)", "Cálculo", "Resultado (m)")
-            self._update_output(result, steps, headers)
-        except ValueError as e: self.show_error("Error en RSA", str(e))
+        def execute():
+            try:
+                b_val = int(b_in.get())
+                if b_val < 0:
+                    raise ValueError("El parámetro 'b' no puede ser negativo.")
+                res = CriptoMath.affine_cipher(text_in.get("1.0", "end-1c"), int(a_in.get()), b_val, mode.get()=='dec')
+                result_text.config(text=res['result'])
+                self._update_tree(steps_tree, res['steps'])
+            except ValueError as e: 
+                messagebox.showerror("Error de Entrada", f"Valor inválido para 'b'.\n{e}")
+            except Exception as e: 
+                messagebox.showerror("Error", str(e))
+        
+        ttk.Button(controls, text="Ejecutar", command=execute).pack(fill='x', side='bottom', padx=20, pady=20)
 
-class EuclidesFrame(BaseFrame):
-    def _create_widgets(self):
-        self._create_io_widgets()
-        self._create_text_input("a_var", "Valor 'a':"); self.a_var.set("391")
-        self._create_text_input("b_var", "Valor 'b':"); self.b_var.set("299")
-        ttk.Separator(self.controls_frame).pack(fill="x", pady=20)
-        ttk.Button(self.controls_frame, text="Calcular", command=self.run, style="Accent.TButton").pack(anchor="w")
-    def run(self):
-        try:
-            a, b = int(self.a_var.get()), int(self.b_var.get())
-            if a == 0 and b == 0: raise ValueError("MCD(0,0) no está definido.")
-            steps = get_euclides_steps(a,b)
-            g, x, y = egcd(a,b)
-            result = f"MCD = {g}   |   Bézout: {a}({x}) + {b}({y}) = {g}"
-            self._update_output(result, steps, ("a", "b", "Cociente (q)", "Resto (r)"))
-        except ValueError as e: self.show_error('Error en Euclides', str(e))
+    def _setup_vigenere_ui(self, controls, output):
+        ttk.Label(controls, text="Texto:", style="Card.TLabel", font=self.font_bold).pack(anchor='w', padx=20)
+        text_in = tk.Text(controls, height=5, font=self.font_normal, relief='solid', borderwidth=1, highlightthickness=1)
+        text_in.pack(fill='x', padx=20, pady=5); text_in.insert("1.0", "ATTACK AT DAWN")
 
-class TCRFrame(BaseFrame):
-    def _create_widgets(self):
-        self._create_io_widgets()
-        self.congruence_rows = []
-        self.list_frame = ttk.Frame(self.controls_frame)
-        self.list_frame.pack(fill="x", expand=True, pady=(10,0))
-        btn_frame = ttk.Frame(self.controls_frame)
-        btn_frame.pack(anchor="w", pady=10)
-        ttk.Button(btn_frame, text="Añadir Fila", command=self.add_row).pack(side="left")
-        ttk.Button(btn_frame, text="Eliminar Última", command=self.remove_row).pack(side="left", padx=10)
-        ttk.Separator(self.controls_frame).pack(fill="x", pady=10)
-        ttk.Button(self.controls_frame, text="Resolver Sistema", command=self.run, style="Accent.TButton").pack(anchor="w")
-        self.add_row("2", "3"); self.add_row("3", "5")
-    def add_row(self, a_val="1", n_val="7"):
-        frame = ttk.Frame(self.list_frame); frame.pack(fill="x", pady=2)
-        ttk.Label(frame, text="x ≡").pack(side="left", padx=(0, 5))
-        a_var = tk.StringVar(value=a_val); ttk.Entry(frame, textvariable=a_var, width=6).pack(side="left")
-        ttk.Label(frame, text="(mod").pack(side="left", padx=5)
-        n_var = tk.StringVar(value=n_val); ttk.Entry(frame, textvariable=n_var, width=6).pack(side="left")
-        ttk.Label(frame, text=")").pack(side="left")
-        self.congruence_rows.append({'frame': frame, 'a': a_var, 'n': n_var})
-    def remove_row(self):
-        if len(self.congruence_rows) > 1: self.congruence_rows.pop()['frame'].destroy()
-    def run(self):
-        try:
-            congruences = []
-            for row in self.congruence_rows:
-                a, n = int(row['a'].get()), int(row['n'].get())
-                congruences.append((a, n))
-            if not congruences: raise ValueError("Añada al menos una congruencia.")
-            result, steps = chinese_remainder_theorem(congruences)
-            self._update_output(result, steps, ("Paso", "Cálculo", "Resultado"))
-        except ValueError as e: self.show_error("Error en T. Chino del Residuo", str(e))
+        ttk.Label(controls, text="Llave (k):", style="Card.TLabel", font=self.font_bold).pack(anchor='w', padx=20, pady=(10,0))
+        key_in = ttk.Entry(controls); key_in.pack(fill='x', padx=20, pady=5); key_in.insert(0, "LEMON")
+
+        mode, result_text, steps_tree = self._common_widgets(controls, output, ["Entrada", "Llave", "Shift", "Cálculo", "Salida"])
+
+        def execute():
+            try:
+                res = CriptoMath.vigenere_cipher(text_in.get("1.0", "end-1c"), key_in.get(), mode.get()=='dec')
+                result_text.config(text=res['result'])
+                self._update_tree(steps_tree, res['steps'])
+            except Exception as e: messagebox.showerror("Error", str(e))
+        
+        ttk.Button(controls, text="Ejecutar", command=execute).pack(fill='x', side='bottom', padx=20, pady=20)
+
+    def _setup_otp_ui(self, controls, output):
+        ttk.Label(controls, text="Mensaje:", style="Card.TLabel", font=self.font_bold).pack(anchor='w', padx=20)
+        text_in = tk.Text(controls, height=5, font=self.font_normal, relief='solid', borderwidth=1, highlightthickness=1)
+        text_in.pack(fill='x', padx=20, pady=5); text_in.insert("1.0", "SECRET MESSAGE")
+
+        ttk.Label(controls, text="Llave (k):", style="Card.TLabel", font=self.font_bold).pack(anchor='w', padx=20, pady=(10,0))
+        key_in = ttk.Entry(controls); key_in.pack(fill='x', padx=20, pady=5)
+        
+        val_label = ttk.Label(controls, font=self.font_small, style="Card.TLabel"); val_label.pack(anchor='w', padx=20)
+
+        exec_btn = ttk.Button(controls, text="Ejecutar")
+        
+        def validate(*args):
+            text_len = len(''.join(filter(str.isalpha, text_in.get("1.0", "end-1c"))))
+            key_len = len(''.join(filter(str.isalpha, key_in.get())))
+            if text_len == 0 and key_len == 0:
+                val_label.config(text="")
+                exec_btn.config(state="disabled")
+                return
+            if text_len == key_len:
+                val_label.config(text=f"Correcto: Longitudes coinciden ({text_len})", style="Success.TLabel")
+                exec_btn.config(state="normal")
+            else:
+                val_label.config(text=f"Error: Longitudes deben ser iguales (M: {text_len}, K: {key_len})", style="Error.TLabel")
+                exec_btn.config(state="disabled")
+        
+        text_in.bind("<KeyRelease>", validate); key_in.bind("<KeyRelease>", validate)
+        
+        def generate_key():
+            text = ''.join(filter(str.isalpha, text_in.get("1.0", "end-1c")))
+            new_key = ''.join(random.choice(CriptoMath.ALPHABET) for _ in range(len(text)))
+            key_in.delete(0, tk.END); key_in.insert(0, new_key); validate()
+            
+        ttk.Button(controls, text="Generar Llave Aleatoria", command=generate_key).pack(fill='x', padx=20, pady=10)
+
+        mode, result_text, steps_tree = self._common_widgets(controls, output, ["Entrada", "Llave", "Shift", "Cálculo", "Salida"])
+
+        def execute():
+            try:
+                res = CriptoMath.one_time_pad_cipher(text_in.get("1.0", "end-1c"), key_in.get(), mode.get()=='dec')
+                result_text.config(text=res['result']); self._update_tree(steps_tree, res['steps'])
+            except Exception as e: messagebox.showerror("Error", str(e))
+        
+        exec_btn.config(command=execute); exec_btn.pack(fill='x', side='bottom', padx=20, pady=20)
+        validate()
+
+    def _setup_rsa_ui(self, controls, output):
+        # Frame de Generación
+        gen_frame = ttk.Frame(controls, style="Card.TFrame")
+        gen_frame.pack(fill='x', padx=20, pady=(0,10))
+        ttk.Label(gen_frame, text="1. Generación de Claves", style="Card.TLabel", font=self.font_bold).pack(anchor='w',pady=5)
+        
+        p_in = self._create_labeled_entry(gen_frame, "Primo (p):", "61")
+        q_in = self._create_labeled_entry(gen_frame, "Primo (q):", "53")
+        e_in = self._create_labeled_entry(gen_frame, "Exponente (e):", "17")
+        val_label = ttk.Label(gen_frame, font=self.font_small, style="Card.TLabel"); val_label.pack(anchor='w', pady=5)
+        
+        gen_btn = ttk.Button(gen_frame, text="Generar y Validar Claves")
+        gen_btn.pack(fill='x', pady=5)
+        
+        pub_key_out = self._create_labeled_entry(gen_frame, "Clave Pública (N,e):", "", readonly=True)
+        priv_key_out = self._create_labeled_entry(gen_frame, "Clave Privada (d):", "", readonly=True)
+
+        # Frame de Operación
+        op_frame = ttk.Frame(controls, style="Card.TFrame")
+        op_frame.pack(fill='x', expand=True, padx=20)
+        ttk.Label(op_frame, text="2. Operación", style="Card.TLabel", font=self.font_bold).pack(anchor='w', pady=5)
+        
+        ttk.Label(op_frame, text="Mensaje / Cifrado:", style="Card.TLabel").pack(anchor='w')
+        text_in = tk.Text(op_frame, height=4, font=self.font_normal, relief='solid', borderwidth=1, highlightthickness=1)
+        text_in.pack(fill='x', pady=5); text_in.insert("1.0", "RSA ENCRYPTED")
+
+        mode, result_text, steps_tree = self._common_widgets(op_frame, output, ["Entrada", "Cálculo", "Resultado"], show_mode=True)
+        exec_btn = ttk.Button(controls, text="Ejecutar", state='disabled')
+        exec_btn.pack(fill='x', side='bottom', padx=20, pady=20)
+        
+        rsa_params = {}
+        def validate_and_generate():
+            try:
+                p, q, e = int(p_in.get()), int(q_in.get()), int(e_in.get())
+                if not CriptoMath.is_prime(p): raise ValueError(f"p={p} no es primo.")
+                if not CriptoMath.is_prime(q): raise ValueError(f"q={q} no es primo.")
+                if p == q: raise ValueError("p y q no pueden ser iguales.")
+                phi_N = (p-1)*(q-1)
+                if not (1 < e < phi_N): raise ValueError(f"e={e} debe estar entre 1 y φ(N)={phi_N}.")
+                if CriptoMath.mcd(e, phi_N) != 1: raise ValueError(f"e={e} no es coprimo con φ(N)={phi_N}.")
+                
+                val_label.config(text="✓ Parámetros válidos.", style="Success.TLabel")
+                N = p * q
+                d = CriptoMath.modinv(e, phi_N)
+                rsa_params.update({'N': N, 'e': e, 'd': d})
+                
+                self._set_readonly_entry(pub_key_out, f"({N}, {e})")
+                self._set_readonly_entry(priv_key_out, str(d))
+                exec_btn.config(state='normal')
+
+            except Exception as ex:
+                val_label.config(text=f"Error: {ex}", style="Error.TLabel")
+                self._set_readonly_entry(pub_key_out, "")
+                self._set_readonly_entry(priv_key_out, "")
+                exec_btn.config(state='disabled')
+
+        gen_btn.config(command=validate_and_generate)
+        for entry in [p_in, q_in, e_in]:
+            entry.bind("<KeyRelease>", lambda e: validate_and_generate())
+
+        def execute():
+            try:
+                key = rsa_params['e'] if mode.get() == 'enc' else rsa_params['d']
+                res = CriptoMath.rsa_cipher(text_in.get("1.0", "end-1c"), rsa_params['N'], key, mode.get())
+                result_text.config(text=res['result']); self._update_tree(steps_tree, res['steps'])
+            except Exception as ex: messagebox.showerror("Error", str(ex))
+            
+        exec_btn.config(command=execute)
+        validate_and_generate()
+        
+    def _setup_euclides_ui(self, controls, output):
+        a_in = self._create_labeled_entry(controls, "Entero (a):", "391")
+        b_in = self._create_labeled_entry(controls, "Entero (b):", "299")
+        
+        _, result_text, steps_tree = self._common_widgets(controls, output, ["Paso de División", "Identidad de Bézout"], show_mode=False)
+        result_text.config(wraplength=350, justify='left')
+
+        def execute():
+            try:
+                res = CriptoMath.euclides_algorithm(int(a_in.get()), int(b_in.get()))
+                result_text.config(text=res['result']); self._update_tree(steps_tree, res['steps'])
+            except Exception as e: messagebox.showerror("Error", str(e))
+        
+        ttk.Button(controls, text="Calcular", command=execute).pack(fill='x', side='bottom', padx=20, pady=20)
+        
+    def _setup_inverso_ui(self, controls, output):
+        a_in = self._create_labeled_entry(controls, "Entero (a):", "17")
+        m_in = self._create_labeled_entry(controls, "Módulo (m):", "20")
+        val_label = ttk.Label(controls, font=self.font_small, style="Card.TLabel"); val_label.pack(anchor='w', padx=20)
+        
+        exec_btn = ttk.Button(controls, text="Calcular Inverso")
+
+        def validate(*args):
+            try:
+                a, m = int(a_in.get()), int(m_in.get())
+                if m <= 1: raise ValueError("Módulo debe ser > 1.")
+                g = CriptoMath.mcd(a,m)
+                if g == 1:
+                    val_label.config(text=f"✓ mcd({a},{m}) = 1. El inverso existe.", style="Success.TLabel")
+                    exec_btn.config(state="normal")
+                else:
+                    val_label.config(text=f"✖ mcd({a},{m}) = {g}. NO existe.", style="Error.TLabel")
+                    exec_btn.config(state="disabled")
+            except (ValueError, TypeError) as e:
+                val_label.config(text=f"Error: {e}", style="Error.TLabel")
+                exec_btn.config(state="disabled")
+
+        a_in.bind("<KeyRelease>", validate); m_in.bind("<KeyRelease>", validate)
+        
+        _, result_text, steps_tree = self._common_widgets(controls, output, ["Paso", "Cálculo", "Resultado"], show_mode=False)
+
+        def execute():
+            try:
+                a, m = int(a_in.get()), int(m_in.get())
+                inv = CriptoMath.modinv(a, m)
+                g, x, y = CriptoMath.egcd(a,m)
+                steps = [("Verificar", f"mcd({a},{m})", g), ("Euclides Ext.", f"{a}({x})+{m}({y})={g}", f"x={x}"), ("Inverso", f"x mod m", inv)]
+                result_text.config(text=f"{a}⁻¹ ≡ {inv} (mod {m})")
+                self._update_tree(steps_tree, steps)
+            except Exception as e: messagebox.showerror("Error", str(e))
+        
+        exec_btn.config(command=execute); exec_btn.pack(fill='x', side='bottom', padx=20, pady=20)
+        validate()
+        
+    def _setup_tcr_ui(self, controls, output):
+        ttk.Label(controls, text="Sistema de Congruencias:", style="Card.TLabel", font=self.font_bold).pack(anchor='w', padx=20)
+        
+        rows_frame = ttk.Frame(controls, style="Card.TFrame"); rows_frame.pack(fill='x', padx=20, pady=5)
+        val_label = ttk.Label(controls, font=self.font_small, style="Card.TLabel"); val_label.pack(anchor='w', padx=20)
+        tcr_rows = []
+
+        def validate_tcr():
+            try:
+                # CORRECCIÓN: Ahora se obtiene de la tupla correcta
+                moduli = [int(n.get()) for f, r, n in tcr_rows if n.get()]
+                if len(moduli) < 2:
+                    val_label.config(text="")
+                    return True
+                
+                for i in range(len(moduli)):
+                    if moduli[i] <= 1: raise ValueError(f"Módulo {moduli[i]} debe ser > 1.")
+                    for j in range(i + 1, len(moduli)):
+                        if CriptoMath.mcd(moduli[i], moduli[j]) != 1:
+                            raise ValueError(f"mcd({moduli[i]}, {moduli[j]}) ≠ 1")
+                val_label.config(text="✓ Módulos son coprimos en pares.", style="Success.TLabel")
+                return True
+            except Exception as e:
+                val_label.config(text=f"Error: {e}", style="Error.TLabel")
+                return False
+
+        def remove_row(row_tuple):
+            if len(tcr_rows) <= 2:
+                messagebox.showwarning("Aviso", "Se requieren al menos dos congruencias.")
+                return
+            frame, r_entry, n_entry = row_tuple
+            tcr_rows.remove(row_tuple)
+            frame.destroy()
+            validate_tcr()
+
+        def add_row(r_val="", n_val=""):
+            row_frame = ttk.Frame(rows_frame, style="Card.TFrame")
+            row_frame.pack(fill='x', pady=2)
+            
+            ttk.Label(row_frame, text="n ≡", style="Card.TLabel").pack(side='left', padx=2)
+            r = ttk.Entry(row_frame, width=5); r.pack(side='left'); r.insert(0, r_val)
+            ttk.Label(row_frame, text="(mod", style="Card.TLabel").pack(side='left', padx=2)
+            n = ttk.Entry(row_frame, width=5); n.pack(side='left'); n.insert(0, n_val)
+            ttk.Label(row_frame, text=")", style="Card.TLabel").pack(side='left', padx=2)
+            
+            # CORRECCIÓN: La tupla ahora incluye el frame para poder eliminarlo
+            row_tuple = (row_frame, r, n)
+            remove_btn = ttk.Button(row_frame, text="-", width=2, command=lambda t=row_tuple: remove_row(t))
+            remove_btn.pack(side='right', padx=(5,0))
+
+            r.bind("<KeyRelease>", lambda e: validate_tcr())
+            n.bind("<KeyRelease>", lambda e: validate_tcr())
+            
+            tcr_rows.append(row_tuple)
+            validate_tcr()
+            
+        ttk.Button(controls, text="Añadir Congruencia", command=lambda: add_row()).pack(fill='x', padx=20, pady=5)
+        add_row("2", "3"); add_row("3", "5"); add_row("2", "7")
+        
+        _, result_text, steps_tree = self._common_widgets(controls, output, ["Paso", "Cálculo", "Resultado"], show_mode=False)
+
+        def execute():
+            if not validate_tcr():
+                messagebox.showerror("Error de Validación", "Revise los módulos antes de continuar.")
+                return
+            try:
+                congruences = [(int(r.get()), int(n.get())) for f, r, n in tcr_rows]
+                res = CriptoMath.chinese_remainder_theorem(congruences)
+                result_text.config(text=res['result']); self._update_tree(steps_tree, res['steps'])
+            except Exception as e: messagebox.showerror("Error", str(e))
+
+        ttk.Button(controls, text="Resolver Sistema", command=execute).pack(fill='x', side='bottom', padx=20, pady=20)
+
+
+    # --- Métodos de Ayuda para UI ---
+
+    def _common_widgets(self, controls, output, tree_cols, show_mode=True):
+        mode = tk.StringVar(value="enc")
+        if show_mode:
+            mode_frame = ttk.Frame(controls, style="Card.TFrame")
+            mode_frame.pack(anchor='w', padx=20, pady=10)
+            ttk.Radiobutton(mode_frame, text="Encriptar", variable=mode, value="enc").pack(side='left')
+            ttk.Radiobutton(mode_frame, text="Desencriptar", variable=mode, value="dec").pack(side='left', padx=10)
+        
+        ttk.Label(output, text="Resultado Final:", font=self.font_bold).pack(anchor='w', padx=10, pady=(0,5))
+        result_text = ttk.Label(output, text="-", style="Result.TLabel"); result_text.pack(anchor='w', padx=10, pady=(0,10))
+        ttk.Label(output, text="Proceso Matemático:", font=self.font_bold).pack(anchor='w', padx=10, pady=(10,5))
+        
+        tree_frame = ttk.Frame(output); tree_frame.pack(fill='both', expand=True, padx=10, pady=(0,10))
+        tree = self._create_treeview(tree_frame, tree_cols)
+        
+        return mode, result_text, tree
+
+    def _create_labeled_entry(self, parent, label_text, default_value, readonly=False):
+        frame = ttk.Frame(parent, style="Card.TFrame")
+        frame.pack(fill='x', padx=10, pady=2)
+        ttk.Label(frame, text=label_text, style="Card.TLabel", width=15).pack(side='left')
+        entry = ttk.Entry(frame, state='readonly' if readonly else 'normal')
+        entry.pack(side='left', fill='x', expand=True)
+        if default_value: entry.insert(0, default_value)
+        return entry
+        
+    def _set_readonly_entry(self, entry, value):
+        entry.config(state='normal')
+        entry.delete(0, tk.END)
+        entry.insert(0, value)
+        entry.config(state='readonly')
+
+    def _create_treeview(self, parent, columns):
+        parent.grid_rowconfigure(0, weight=1); parent.grid_columnconfigure(0, weight=1)
+        tree = ttk.Treeview(parent, columns=columns, show="headings")
+        for col in columns:
+            tree.heading(col, text=col)
+            tree.column(col, width=150, anchor='w')
+        
+        vsb = ttk.Scrollbar(parent, orient="vertical", command=tree.yview)
+        hsb = ttk.Scrollbar(parent, orient="horizontal", command=tree.xview)
+        tree.configure(yscrollcommand=vsb.set, xscrollcommand=hsb.set)
+        
+        tree.grid(row=0, column=0, sticky='nsew')
+        vsb.grid(row=0, column=1, sticky='ns')
+        hsb.grid(row=1, column=0, sticky='ew')
+        return tree
+
+    def _update_tree(self, tree, data):
+        tree.delete(*tree.get_children())
+        for row in data:
+            tree.insert("", tk.END, values=row)
 
 if __name__ == "__main__":
-    app = App()
+    app = CriptoSuiteApp()
     app.mainloop()
 
