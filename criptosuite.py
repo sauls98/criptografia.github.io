@@ -5,7 +5,7 @@ import random
 
 # =================================================================================================
 # SECCIÓN 1: LÓGICA CRIPTOGRÁFICA
-# Contiene toda la matemática pura, portada directamente de la lógica de JavaScript.
+
 # =================================================================================================
 class CriptoMath:
     ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
